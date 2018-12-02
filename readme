@@ -1,0 +1,8 @@
+mariadb server
+   - user: root
+   - password: admin
+   - server: localhost
+   - database: test
+
+Se ha instalado adminer para administrar la base de datos
+por ahora puerto 8080

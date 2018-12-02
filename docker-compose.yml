@@ -1,0 +1,21 @@
+version: '3'
+services:
+  airflow:
+    build: ./airflow
+    ports:
+     - "8081:8081"
+  spark:
+    build: ./spark
+    ports:
+      - "8998:8998"     
+  db:
+    image: "mariadb/columnstore"
+    restart: always
+    environment:
+         MARIADB_ROOT_PASSWORD: admin
+         MARIADB_DATABASE: test
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8082"

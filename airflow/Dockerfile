@@ -9,8 +9,8 @@ RUN apt-get update
 RUN apt-get -y install gcc
 RUN pip install --trusted-host pypi.python.org apache-airflow
 COPY airflow.cfg /root/airflow/airflow.cfg
-EXPOSE 8080
+EXPOSE 8081
 
 RUN airflow initdb
 
-CMD airflow webserver -p 8080
+CMD airflow webserver -p 8081
