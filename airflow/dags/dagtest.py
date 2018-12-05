@@ -1,11 +1,11 @@
-"""
-Code that goes along with the Airflow tutorial located at:
-https://github.com/apache/incubator-airflow/blob/master/airflow/example_dags/tutorial.py
-"""
+
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
+from airflow.sensors.http_sensor import HttpSensor
+from airflow.operators.http_operator import SimpleHttpOperator
+from airflow.operators import PythonOperator
 from datetime import datetime, timedelta
-
+import json, pprint, requests, textwrap
 
 default_args = {
     'owner': 'airflow',
@@ -15,41 +15,36 @@ default_args = {
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
-    'retry_delay': timedelta(minutes=5),
+    'retry_delay': timedelta(minutes=5)
     # 'queue': 'bash_queue',
     # 'pool': 'backfill',
     # 'priority_weight': 10,
     # 'end_date': datetime(2016, 1, 1),
 }
 
-dag = DAG(
-    'tutorial', default_args=default_args, schedule_interval=timedelta(days=1))
+"""def task_spark()
+    r = requests.get(session_url, headers={'Content-Type': 'application/json'})
+    statements_url = session_url + '/statements'
+    data = {'code': '1 + 1'}
+    r = requests.post(statements_url, data=json.dumps(data), headers=headers)
+    return r.json()"""
 
-# t1, t2 and t3 are examples of tasks created by instantiating operators
-t1 = BashOperator(
-    task_id='print_date',
-    bash_command='date',
-    dag=dag)
+"""def init_session(ds, **kwargs):
+    host = 'http://localhost:8998'
+    data = {'kind': 'spark'}
+    headers = {'Content-Type': 'application/json'}
+    r = requests.post(host + '/sessions', data=json.dumps(data), headers=headers)
+    session_url = host + r.headers['location']"""
 
-t2 = BashOperator(
-    task_id='sleep',
-    bash_command='sleep 5',
-    retries=3,
-    dag=dag)
 
-templated_command = """
-    {% for i in range(5) %}
-        echo "{{ ds }}"
-        echo "{{ macros.ds_add(ds, 7)}}"
-        echo "{{ params.my_param }}"
-    {% endfor %}
-"""
-
-t3 = BashOperator(
-    task_id='templated',
-    bash_command=templated_command,
-    params={'my_param': 'Parameter I passed in'},
-    dag=dag)
-
-t2.set_upstream(t1)
-t3.set_upstream(t1)
+dag = DAG('etl-spark', default_args=default_args, schedule_interval="@once")
+run_this = SimpleHttpOperator(
+    http_conn_id='spark',
+    task_id='start-session',
+    data = json.dumps({'kind': 'spark'}),
+    headers = {'Content-Type': 'application/json'},
+    endpoint = 'sessions',
+    log_response = True,
+    xcom_push = True,
+    dag=dag,
+)

@@ -3,11 +3,13 @@ services:
   dashboard:
     build: ./dashboard
     ports:
-      - "8050:8050"
+     - "8050:8050"
   airflow:
     build: ./airflow
     ports:
      - "8081:8081"
+    networks:
+     - spark
     volumes:
      - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/airflow/dags:/root/airflow/dags
   db:
@@ -22,9 +24,12 @@ services:
     ports:
       - "8080:8080"
   spark:
-    network_mode: host
-    depends_on:
-      - airflow
+    networks:
+      - spark
     build: ./spark
     ports:
       - "8998:8998"
+
+
+networks:
+    spark:
