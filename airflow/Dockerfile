@@ -12,4 +12,4 @@ EXPOSE 8081
 
 RUN airflow initdb
 
-CMD airflow webserver -p 8081
+CMD  airflow webserver -p 8081 -D && airflow scheduler 
