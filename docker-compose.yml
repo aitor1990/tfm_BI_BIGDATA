@@ -8,6 +8,8 @@ services:
     build: ./airflow
     ports:
      - "8081:8081"
+    volumes:
+     - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/airflow/dags:/root/airflow/dags
   db:
     image: "mariadb/columnstore"
     restart: always
@@ -20,6 +22,9 @@ services:
     ports:
       - "8080:8080"
   spark:
+    network_mode: host
+    depends_on:
+      - airflow
     build: ./spark
     ports:
       - "8998:8998"
