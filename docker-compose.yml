@@ -29,7 +29,8 @@ services:
     build: ./spark
     ports:
       - "8998:8998"
-
+    volumes:
+      - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/data:/data
 
 networks:
     spark:

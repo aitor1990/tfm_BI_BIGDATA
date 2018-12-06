@@ -11,14 +11,17 @@ from customtasks import SparkLivykHook
 CONNECTION = 'spark'
 
 
-
-def throw_task(dag,code_path):
+'''
+'''
+def throw_task(dag,code_path,name = ''):
+    if name:
+        name = '-'+name;
     with open(code_path, 'r') as f:
         code = f.read()
 
     spark_session = SparkLivykHook(
         http_conn_id=CONNECTION,
-        task_id='start-session',
+        task_id='start-session'+name,
         data = json.dumps({'kind': 'spark'}),
         headers = {'Content-Type': 'application/json'},
         endpoint = 'sessions',
@@ -28,9 +31,9 @@ def throw_task(dag,code_path):
 
 
     sensor = HttpSensor(
-        task_id='wait_spark_ready',
+        task_id='wait_spark_ready'+name,
         http_conn_id=CONNECTION,
-        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session')+'/state'}}",
+        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')+'/state'}}",
         request_params={},
         response_check=lambda response : response.json()['state'] == 'idle',
         poke_interval=5,
@@ -39,18 +42,18 @@ def throw_task(dag,code_path):
 
     code = SimpleHttpOperator(
         http_conn_id=CONNECTION,
-        task_id='send-task',
+        task_id='send-task'+name,
         data = json.dumps({'code': code}),
         headers = {'Content-Type': 'application/json'},
-        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session')+'/statements'}}",
+        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')+'/statements'}}",
         log_response = True,
         dag=dag,
     )
 
     end_task = HttpSensor(
-        task_id='end-task',
+        task_id='end-task'+name,
         http_conn_id=CONNECTION,
-        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session')+'/state'}}",
+        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')+'/state'}}",
         request_params={},
         response_check=lambda response : response.json()['state'] == 'available' or response.json()['state'] == 'idle',
         poke_interval=5,

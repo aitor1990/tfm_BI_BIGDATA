@@ -15,4 +15,4 @@ default_args = {
 }
 
 dag = DAG('etl-spark', default_args=default_args, schedule_interval="@once")
-throw_task(dag,'/root/airflow/dags/lib/code.py')
+throw_task(dag,'/root/airflow/dags/lib/code.py','test')
