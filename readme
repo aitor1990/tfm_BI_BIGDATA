@@ -7,7 +7,7 @@ stop system:
 mariadb server
    - user: root
    - password: admin
-   - server: localhost
+   - server: db
    - database: test
 
 Se ha instalado adminer para administrar la base de datos

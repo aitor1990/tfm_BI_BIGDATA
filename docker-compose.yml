@@ -2,6 +2,8 @@ version: '3'
 services:
   dashboard:
     build: ./dashboard
+    networks:
+     - database
     ports:
      - "8050:8050"
   airflow:
@@ -18,14 +20,19 @@ services:
     environment:
          MARIADB_ROOT_PASSWORD: admin
          MARIADB_DATABASE: test
+    networks:
+      - database
   adminer:
     image: adminer
     restart: always
+    networks:
+      - database     
     ports:
       - "8080:8080"
   spark:
     networks:
       - spark
+      - database
     build: ./spark
     ports:
       - "8998:8998"
@@ -34,3 +41,4 @@ services:
 
 networks:
     spark:
+    database:
