@@ -3,11 +3,14 @@ services:
   dashboard:
     build: ./dashboard
     volumes:
-      - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/dashboard/server:/dashboard/server
+      - ./dashboard/server:/dashboard/server
     networks:
      - database
     ports:
      - "8050:8050"
+    stdin_open: true
+    tty: true
+
   airflow:
     build: ./airflow
     ports:
@@ -15,22 +18,7 @@ services:
     networks:
      - spark
     volumes:
-     - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/airflow/dags:/root/airflow/dags
-  db:
-    image: "mariadb/columnstore"
-    restart: always
-    environment:
-         MARIADB_ROOT_PASSWORD: admin
-         MARIADB_DATABASE: test
-    networks:
-      - database
-  adminer:
-    image: adminer
-    restart: always
-    networks:
-      - database     
-    ports:
-      - "8080:8080"
+     - ./airflow/dags:/root/airflow/dags
   spark:
     networks:
       - spark
@@ -39,11 +27,11 @@ services:
     ports:
       - "8998:8998"
     volumes:
-      - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/data:/data
+      - ./data:/data
   drill:
     build: ./drill
     volumes:
-      - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/data:/data
+      - ./data:/data
     networks:
       - database
     ports:
