@@ -2,6 +2,8 @@ version: '3'
 services:
   dashboard:
     build: ./dashboard
+    volumes:
+      - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/dashboard/server:/dashboard/server
     networks:
      - database
     ports:
@@ -38,7 +40,17 @@ services:
       - "8998:8998"
     volumes:
       - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/data:/data
-
+  drill:
+    build: ./drill
+    volumes:
+      - /home/aitor/Escritorio/docker/tfm_BI_BIGDATA/data:/data
+    networks:
+      - database
+    ports:
+      - "8047:8047"
+    stdin_open: true
+    tty: true
+           
 networks:
     spark:
     database:

@@ -2,11 +2,24 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from pydrill.client import PyDrill
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
+drill = PyDrill(host='drill', port=8047)
+if not drill.is_active():
+    raise ImproperlyConfigured('Please run Drill first')
+
+yelp_reviews = drill.query('''SELECT * FROM dfs.`/data/testout.parquet` LIMIT 5''')
+results = []
+for result in yelp_reviews:
+    resultValue = {}
+    resultValue['value'] = result['word']
+    resultValue['label'] = result['word']
+    results += [resultValue]
+print(results)
 app.layout = html.Div(children=[
     html.H1(children='Hello Dash'),
 
@@ -14,17 +27,11 @@ app.layout = html.Div(children=[
         Dash: A web application framework for Python.
     '''),
 
-    dcc.Graph(
-        id='example-graph',
-        figure={
-            'data': [
-                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
-            ],
-            'layout': {
-                'title': 'Dash Data Visualization'
-            }
-        }
+
+    dcc.Dropdown(
+        options=results,
+        multi=True,
+        value="MTL"
     )
 ])
 
