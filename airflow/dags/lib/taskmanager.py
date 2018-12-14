@@ -10,7 +10,15 @@ from airflow.utils.decorators import apply_defaults
 from customtasks import SparkLivykHook
 CONNECTION = 'spark'
 
-
+def statment_status(response):
+    state = response.json()['state']
+    if state == 'available':
+         return True
+    elif state == 'error':
+        raise ValueError('error during the process')
+    elif state == 'cancelled':
+        raise ValueError('task cancelled')
+    return False
 '''
 '''
 def throw_task(dag,code_path,name = ''):
@@ -25,7 +33,6 @@ def throw_task(dag,code_path,name = ''):
         data = json.dumps({'kind': 'spark'}),
         headers = {'Content-Type': 'application/json'},
         endpoint = 'sessions',
-        log_response = True,
         dag=dag,
     )
 
@@ -40,25 +47,25 @@ def throw_task(dag,code_path,name = ''):
         dag=dag,
     )
 
-    code = SimpleHttpOperator(
+    code = SparkLivykHook(
         http_conn_id=CONNECTION,
         task_id='send-task'+name,
         data = json.dumps({'code': code}),
         headers = {'Content-Type': 'application/json'},
         endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')+'/statements'}}",
-        log_response = True,
         dag=dag,
     )
 
     end_task = HttpSensor(
         task_id='end-task'+name,
         http_conn_id=CONNECTION,
-        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')+'/state'}}",
+        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')+'/statements/'+ti.xcom_pull(task_ids='send-task"+name+"')}}",
         request_params={},
-        response_check=lambda response : response.json()['state'] == 'available' or response.json()['state'] == 'idle',
+        response_check= statment_status,
         poke_interval=5,
         dag=dag,
     )
+
 
     '''close_task = SimpleHttpOperator(
         method='DELETE',
