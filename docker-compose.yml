@@ -1,24 +1,5 @@
 version: '3'
 services:
-  dashboard:
-    build: ./dashboard
-    volumes:
-      - ./dashboard/server:/dashboard/server
-    networks:
-     - database
-    ports:
-     - "8050:8050"
-    stdin_open: true
-    tty: true
-
-  airflow:
-    build: ./airflow
-    ports:
-     - "8081:8081"
-    networks:
-     - spark
-    volumes:
-     - ./airflow/dags:/root/airflow/dags
   spark:
     networks:
       - spark
@@ -38,7 +19,25 @@ services:
       - "8047:8047"
     stdin_open: true
     tty: true
-           
+  airflow:
+    build: ./airflow
+    ports:
+     - "8081:8081"
+    networks:
+     - spark
+    volumes:
+     - ./airflow/dags:/root/airflow/dags
+  dashboard:
+    build: ./dashboard
+    volumes:
+      - ./dashboard/server:/dashboard/server
+    networks:
+     - database
+    ports:
+     - "8050:8050"
+    stdin_open: true
+    tty: true
+
 networks:
     spark:
     database:

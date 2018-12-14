@@ -60,5 +60,13 @@ def throw_task(dag,code_path,name = ''):
         dag=dag,
     )
 
+    '''close_task = SimpleHttpOperator(
+        method='DELETE',
+        task_id='close-task'+name,
+        http_conn_id=CONNECTION,
+        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')}}",
+        dag=dag,
+    )'''
+
     spark_session >> sensor >> code >> end_task
     return end_task
