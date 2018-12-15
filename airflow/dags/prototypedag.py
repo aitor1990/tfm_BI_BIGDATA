@@ -1,6 +1,6 @@
 
+from etl.taskmanager import throw_task
 from airflow import DAG
-from lib.taskmanager import throw_task
 from datetime import datetime, timedelta
 
 default_args = {
@@ -15,4 +15,4 @@ default_args = {
 }
 
 dag = DAG('etl-spark', default_args=default_args, schedule_interval="@once")
-throw_task(dag,'/root/airflow/dags/lib/code.py','test')
+throw_task(dag, '/root/airflow/dags/etl/code.scala', 'test')

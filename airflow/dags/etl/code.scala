@@ -19,8 +19,8 @@ tour = tour.withColumn("split",split(col("indic_ur,cities\\time"), ",")).
             col("1994 ").as("1994"),col("1993 ").as("1993"),col("1992 ").as("1992"),
             col("1991 ").as("1991"),col("1990 ").as("1990")
        )
-tour = tour.withColumn("")
-var countries = spark.read.format("csv").
+tour.select("variable","region","2018").union(tour.select("variable","region","2017")).show()
+/*var countries = spark.read.format("csv").
                            option("header", "true").
                            option("delimiter", ",").
                            load("/data/regions.csv").
@@ -28,4 +28,5 @@ var countries = spark.read.format("csv").
 tour = tour.join(countries).
             where($"region" === $"UA_CODE_2017").
             drop("UA_CODE_2017","region")
-tour.show()
+
+tour.show()*/
