@@ -72,7 +72,7 @@ tour = tour.select("variable","region","2018").withColumn("year",lit("2018")).
     union(tour.select("variable","region","1992").withColumn("year",lit("1992"))).
     union(tour.select("variable","region","1991").withColumn("year",lit("1991"))).
     union(tour.select("variable","region","1990").withColumn("year",lit("1990"))).
-    select($"variable",$"region",$"2018".as("value"))
+    select($"variable",$"region",$"2018".as("value"),$"year")
 
 //filter values
 tour = tour.filter(!$"value".contains(":")).
@@ -88,14 +88,14 @@ tour = tour.join(cities.select("city_code","index_city")).
             drop("variable")*/
 
 // asientos de cine por 1000 habitantes
-var cinema_seats = tour.filter($"variable_code" === lit("CR1003I"))
+var cinema_seats = tour.filter($"variable" === lit("CR1003I"))
 // camas por cada 1000 habitantes
-var beds_tour = tour.filter($"variable_code" === lit("CR2010I")).
-                  select($"region".as("region_beds"),&"year".as("year_beds"),&"variable".as("beds"))
+var beds_tour = tour.filter($"variable" === lit("CR2010I")).
+                  select($"region".as("region_beds"),$"year".as("year_beds"),$"value".as("beds"))
 
 // noches por turista
-var nights_spend = tour.filter($"variable_code" === lit("CR2011I")).
-                   select($"region".as("region_nights"),&"year".as("year_nights"),&"variable".as("nights"))
+var nights_spend = tour.filter($"variable" === lit("CR2011I")).
+                   select($"region".as("region_nights"),$"year".as("year_nights"),$"value".as("nights"))
 
 tour = cinema_seats.join(beds_tour).
             where($"region" === $"region_beds" && $"year" === $"year_beds").
