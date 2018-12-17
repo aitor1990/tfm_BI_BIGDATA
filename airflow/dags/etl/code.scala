@@ -34,7 +34,7 @@ var countries = spark.read.format("csv").
 var city_dimension = countries.join(cities).
                                   where($"country_code" === substring($"city_code",0,2)).
                                   drop("country_code","city_code")
-city_dimension.write.mode("overwrite").parquet("city_dimension.parquet")
+//city_dimension.write.mode("overwrite").parquet("/data/city_dimension.parquet")
 
 var variables = spark.read.format("csv").
                       option("header", "true").
@@ -44,34 +44,34 @@ var variables = spark.read.format("csv").
 variables = variables.withColumn("index_variable",monotonically_increasing_id())
 
 tour = tour.select("variable","region","2018").withColumn("year",lit("2018")).
-    union(tour.select("variable","region","2017")).withColumn("year",lit("2017")).
-    union(tour.select("variable","region","2016")).withColumn("year",lit("2016")).
-    union(tour.select("variable","region","2015")).withColumn("year",lit("2015")).
-    union(tour.select("variable","region","2014")).withColumn("year",lit("2014")).
-    union(tour.select("variable","region","2013")).withColumn("year",lit("2013")).
-    union(tour.select("variable","region","2012")).withColumn("year",lit("2012")).
-    union(tour.select("variable","region","2011")).withColumn("year",lit("2011")).
-    union(tour.select("variable","region","2010")).withColumn("year",lit("2010")).
-    union(tour.select("variable","region","2009")).withColumn("year",lit("2009")).
-    union(tour.select("variable","region","2008")).withColumn("year",lit("2008")).
-    union(tour.select("variable","region","2007")).withColumn("year",lit("2007")).
-    union(tour.select("variable","region","2006")).withColumn("year",lit("2006")).
-    union(tour.select("variable","region","2005")).withColumn("year",lit("2005")).
-    union(tour.select("variable","region","2004")).withColumn("year",lit("2004")).
-    union(tour.select("variable","region","2003")).withColumn("year",lit("2003"))..
-    union(tour.select("variable","region","2002")).withColumn("year",lit("2002")).
-    union(tour.select("variable","region","2001")).withColumn("year",lit("2001")).
-    union(tour.select("variable","region","2000")).withColumn("year",lit("2000")).
-    union(tour.select("variable","region","1999")).withColumn("year",lit("1999")).
-    union(tour.select("variable","region","1998")).withColumn("year",lit("1998")).
-    union(tour.select("variable","region","1997")).withColumn("year",lit("1997")).
-    union(tour.select("variable","region","1996")).withColumn("year",lit("1996")).
-    union(tour.select("variable","region","1995")).withColumn("year",lit("1995")).
-    union(tour.select("variable","region","1994")).withColumn("year",lit("1994")).
-    union(tour.select("variable","region","1993")).withColumn("year",lit("1993")).
-    union(tour.select("variable","region","1992")).withColumn("year",lit("1992")).
-    union(tour.select("variable","region","1991")).withColumn("year",lit("1991")).
-    union(tour.select("variable","region","1990")).withColumn("year",lit("1990")).
+    union(tour.select("variable","region","2017").withColumn("year",lit("2017"))).
+    union(tour.select("variable","region","2016").withColumn("year",lit("2016"))).
+    union(tour.select("variable","region","2015").withColumn("year",lit("2015"))).
+    union(tour.select("variable","region","2014").withColumn("year",lit("2014"))).
+    union(tour.select("variable","region","2013").withColumn("year",lit("2013"))).
+    union(tour.select("variable","region","2012").withColumn("year",lit("2012"))).
+    union(tour.select("variable","region","2011").withColumn("year",lit("2011"))).
+    union(tour.select("variable","region","2010").withColumn("year",lit("2010"))).
+    union(tour.select("variable","region","2009").withColumn("year",lit("2009"))).
+    union(tour.select("variable","region","2008").withColumn("year",lit("2008"))).
+    union(tour.select("variable","region","2007").withColumn("year",lit("2007"))).
+    union(tour.select("variable","region","2006").withColumn("year",lit("2006"))).
+    union(tour.select("variable","region","2005").withColumn("year",lit("2005"))).
+    union(tour.select("variable","region","2004").withColumn("year",lit("2004"))).
+    union(tour.select("variable","region","2003").withColumn("year",lit("2003"))).
+    union(tour.select("variable","region","2002").withColumn("year",lit("2002"))).
+    union(tour.select("variable","region","2001").withColumn("year",lit("2001"))).
+    union(tour.select("variable","region","2000").withColumn("year",lit("2000"))).
+    union(tour.select("variable","region","1999").withColumn("year",lit("1999"))).
+    union(tour.select("variable","region","1998").withColumn("year",lit("1998"))).
+    union(tour.select("variable","region","1997").withColumn("year",lit("1997"))).
+    union(tour.select("variable","region","1996").withColumn("year",lit("1996"))).
+    union(tour.select("variable","region","1995").withColumn("year",lit("1995"))).
+    union(tour.select("variable","region","1994").withColumn("year",lit("1994"))).
+    union(tour.select("variable","region","1993").withColumn("year",lit("1993"))).
+    union(tour.select("variable","region","1992").withColumn("year",lit("1992"))).
+    union(tour.select("variable","region","1991").withColumn("year",lit("1991"))).
+    union(tour.select("variable","region","1990").withColumn("year",lit("1990"))).
     select($"variable",$"region",$"2018".as("value"))
 
 //filter values
@@ -81,22 +81,27 @@ tour = tour.filter(!$"value".contains(":")).
 //create index for facts table
 tour = tour.join(cities.select("city_code","index_city")).
                where($"region" === $"city_code").
-               drop("region","city_code")
+               drop("region")
 
-tour = tour.join(variables.select("variable_code","index_variable")).
+/*tour = tour.join(variables.select("variable_code","index_variable")).
             where($"variable_code" === $"variable").
-            drop("variable")
+            drop("variable")*/
 
 // asientos de cine por 1000 habitantes
-cinema_seats = tour.filter($"variable_code" === lit("CR1003I")).
-                    drop("variable_code")
-
+var cinema_seats = tour.filter($"variable_code" === lit("CR1003I"))
 // camas por cada 1000 habitantes
-beds_tour = tour.filter($"variable_code" === lit("CR2010I")).
-                  select("")
+var beds_tour = tour.filter($"variable_code" === lit("CR2010I")).
+                  select($"region".as("region_beds"),&"year".as("year_beds"),&"variable".as("beds"))
 
 // noches por turista
-nights_spend = tour.filter($"variable_code" === lit("CR2011I"))
-                    drop("variable_code")
+var nights_spend = tour.filter($"variable_code" === lit("CR2011I")).
+                   select($"region".as("region_nights"),&"year".as("year_nights"),&"variable".as("nights"))
 
-tour.write.mode("overwrite").parquet("tourism_facts.parquet")
+tour = cinema_seats.join(beds_tour).
+            where($"region" === $"region_beds" && $"year" === $"year_beds").
+            drop($"region_beds","year_beds").
+            join(nights_spend).
+            where($"region" === $"region_nights" && $"year" === $"year_nights").
+            drop($"region_nights",$"year_nights")
+tour.show()
+//tour.write.mode("overwrite").parquet("tourism_facts.parquet")
