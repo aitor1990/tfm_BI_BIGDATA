@@ -31,6 +31,7 @@ var countries = spark.read.format("csv").
                         option("delimiter", " ").
                         load("/data/countries.csv").
                         select($"Code".as("country_code"),$"English".as("country_name"))
+
 var city_dimension = countries.join(cities).
                                   where($"country_code" === substring($"city_code",0,2)).
                                   drop("country_code","city_code")
@@ -80,15 +81,15 @@ tour = tour.filter(!$"value".contains(":")).
             withColumn("value",regexp_replace($"value", "\\D+", ""))
 //create index for facts table
 tour = tour.join(cities.select("city_code","index_city")).
-               where($"region" === $"city_code").
-               drop("region")
+               where($"region" === $"city_code")
 
-/*tour = tour.join(variables.select("variable_code","index_variable")).
+
+tour = tour.join(variables.select("variable_code","index_variable")).
             where($"variable_code" === $"variable").
-            drop("variable")*/
+            drop("variable")
 
 // asientos de cine por 1000 habitantes
-var cinema_seats = tour.filter($"variable" === lit("CR1003I"))
+var cinema_seats = tour.filter($"variable" === lit("CR1003I")).withColumnRenamed("variable","cinema_seats")
 // camas por cada 1000 habitantes
 var beds_tour = tour.filter($"variable" === lit("CR2010I")).
                   select($"region".as("region_beds"),$"year".as("year_beds"),$"value".as("beds"))
@@ -99,9 +100,8 @@ var nights_spend = tour.filter($"variable" === lit("CR2011I")).
 
 tour = cinema_seats.join(beds_tour).
             where($"region" === $"region_beds" && $"year" === $"year_beds").
-            drop($"region_beds","year_beds").
+            drop("region_beds","year_beds").
             join(nights_spend).
             where($"region" === $"region_nights" && $"year" === $"year_nights").
-            drop($"region_nights",$"year_nights")
-tour.show()
-//tour.write.mode("overwrite").parquet("tourism_facts.parquet")
+            select($"index_city",$"index_variable",$"value".as("cinema_seats"),$"beds",$"nights",$"year")
+tour.write.mode("overwrite").option("compression","none").parquet("tourism_facts.parquet")
