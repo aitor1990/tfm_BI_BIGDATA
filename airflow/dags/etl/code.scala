@@ -1,4 +1,6 @@
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types.IntegerType
+
 val spark = SparkSession.builder.config(sc.getConf).getOrCreate()
 var tour = spark.read.format("csv").     // Use "csv" regardless of TSV or CSV.
                 option("header", "true").  // Does the file have a header line?
@@ -35,7 +37,9 @@ var countries = spark.read.format("csv").
 var city_dimension = countries.join(cities).
                                   where($"country_code" === substring($"city_code",0,2)).
                                   drop("country_code","city_code")
-//city_dimension.write.mode("overwrite").parquet("/data/city_dimension.parquet")
+city_dimension = city_dimension.withColumn("index_city", city_dimension("index_city").cast(IntegerType))
+city_dimension.write.mode("overwrite").parquet("/data/city_dimension.parquet")
+
 
 var variables = spark.read.format("csv").
                       option("header", "true").
@@ -104,4 +108,12 @@ tour = cinema_seats.join(beds_tour).
             join(nights_spend).
             where($"region" === $"region_nights" && $"year" === $"year_nights").
             select($"index_city",$"index_variable",$"value".as("cinema_seats"),$"beds",$"nights",$"year")
-tour.write.mode("overwrite").option("compression","none").parquet("tourism_facts.parquet")
+
+tour = tour.withColumn("index_city", tour("index_city").cast(IntegerType)).
+            withColumn("index_variable", tour("index_variable").cast(IntegerType)).
+            withColumn("cinema_seats", tour("cinema_seats").cast(IntegerType)).
+            withColumn("beds", tour("beds").cast(IntegerType)).
+            withColumn("nights", tour("nights").cast(IntegerType)).
+            withColumn("year", tour("year").cast(IntegerType))
+
+tour.write.mode("overwrite").parquet("/data/tourism_facts.parquet")
