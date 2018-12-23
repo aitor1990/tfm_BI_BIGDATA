@@ -5,6 +5,7 @@ RUN pip install dash-html-components==0.13.2
 RUN pip install dash-core-components==0.38.1 
 RUN pip install dash-table==3.1.7  
 RUN pip install pydrill
+RUN pip install jinja2
 
 EXPOSE 8050
 CMD ["python","/dashboard/server/app.py"]

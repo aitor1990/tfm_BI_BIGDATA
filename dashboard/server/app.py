@@ -20,6 +20,7 @@ total_beds_by_country = '''
 select avg(b.beds) as average_bed ,a.country_name, a.country_map_code
 from dfs.`/data/city_dimension.parquet` a,dfs.`/data/tourism_facts.parquet` b
 where a.index_city = b.index_city group by a.country_name, a.country_map_code
+order by average_bed desc
 '''
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -34,10 +35,12 @@ results_query = drill.query(total_beds_by_country)
 results = []
 countries = []
 values = []
+countries_name = []
 for result in results_query:
     resultValue = {}
     resultValue['value'] = result['country_name']
     resultValue['label'] = result['country_name']
+    countries_name += [result['country_name']]
     countries += [result['country_map_code']]
     values += [result['average_bed']]
     results += [resultValue]
@@ -45,29 +48,23 @@ for result in results_query:
 
 
 app.layout = html.Div(children=[
-    html.H1(children='Hello Dash'),
+    html.H1(children='European cities dashboard'),
 
-    html.Div(children='''
-        Dash: A web application framework for Python.
-    '''),
-
+    html.Div(children=''),
     dcc.Dropdown(
         id='country_selector',
         options=results,
         multi=False,
-        value="MTL"
+        value=""
     ),
 
     dcc.Graph(
         id='example-graph',
         figure={
             'data': [
-                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
+                {'x': countries_name, 'y': values, 'type': 'bar', 'name': 'Countries'},
             ],
-            'layout': {
-                'title': 'Dash Data Visualization'
-            }
+            'layout': {'title': ''}
         }
     ),
     dcc.Graph(
