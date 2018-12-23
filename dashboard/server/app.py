@@ -5,12 +5,22 @@ import dash_html_components as html
 from pydrill.client import PyDrill
 from jinja2 import Template
 from plotly import graph_objs as go
+from utils import europe_map
 
 
-
-beds_by_country = '''select avg(b.beds) as average_bed ,a.city_name
+beds_by_country = '''
+select avg(b.beds) as average_bed ,a.city_name
 from dfs.`/data/city_dimension.parquet` a,dfs.`/data/tourism_facts.parquet` b
-where a.index_city = b.index_city and a.country_name = '{{ country_name }}' group by a.city_name'''
+where a.index_city = b.index_city and a.country_name = '{{ country_name }}'
+group by a.city_name
+order by average_bed desc
+'''
+
+total_beds_by_country = '''
+select avg(b.beds) as average_bed ,a.country_name, a.country_map_code
+from dfs.`/data/city_dimension.parquet` a,dfs.`/data/tourism_facts.parquet` b
+where a.index_city = b.index_city group by a.country_name, a.country_map_code
+'''
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -20,42 +30,19 @@ drill = PyDrill(host='drill', port=8047)
 if not drill.is_active():
     raise ImproperlyConfigured('Please run Drill first')
 
-results_query = drill.query('''select a.country_name from dfs.`/data/city_dimension.parquet` a''')
+results_query = drill.query(total_beds_by_country)
 results = []
+countries = []
+values = []
 for result in results_query:
     resultValue = {}
     resultValue['value'] = result['country_name']
     resultValue['label'] = result['country_name']
+    countries += [result['country_map_code']]
+    values += [result['average_bed']]
     results += [resultValue]
 
-scl = [[0.0, 'rgb(242,240,247)'],[0.2, 'rgb(218,218,235)'],[0.4, 'rgb(188,189,220)'],\
-            [0.6, 'rgb(158,154,200)'],[0.8, 'rgb(117,107,177)'],[1.0, 'rgb(84,39,143)']]
-            
-#MAPA EUROPA
-data = [ dict(
-        type='choropleth',
-        colorscale = scl,
-        autocolorscale = False,
-        locations = ['FRA', 'DEU', 'RUS', 'ESP'],
-        z = [1,2,3,4],
-        marker = dict(
-            line = dict (
-                color = 'rgb(255,255,255)',
-                width = 2
-            ) ),
-        colorbar = dict(
-            title = "Millions USD")
-        ) ]
 
-layout = dict(
-        title = 'Europe',
-        geo = dict(
-            scope='europe',
-            showlakes = True,
-            lakecolor = 'rgb(255, 255, 255)'),
-             )
-
-fig = dict( data=data, layout=layout )
 
 app.layout = html.Div(children=[
     html.H1(children='Hello Dash'),
@@ -86,7 +73,7 @@ app.layout = html.Div(children=[
     dcc.Graph(
                 id="map",
                 style={"height": "90%", "width": "98%"},
-                figure = fig
+                figure = europe_map(countries,values)
     )
 ])
 

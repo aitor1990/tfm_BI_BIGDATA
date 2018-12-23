@@ -1,29 +1,29 @@
-Code Country English French German
-BE Belgique/België Belgium Belgique Belgien
-BG Bulgarija Bulgaria Bulgarie Bulgarien
-CZ Česká republika Czech Republic République tchèque Tschechische Republik
-DK Danmark Denmark Danemark Dänemark
-DE Deutschland Germany Allemagne Deutschland
-EE Eesti Estonia Estonie Estland
-IE Éire/Ireland Ireland Irlande Irland
-EL Elláda Greece Grèce Griechenland
-ES España Spain Espagne Spanien
-FR France France France Frankreich
-HR Hrvatska Croatia Croatie Kroatien
-IT Italia Italy Italie Italien
-CY Kýpros Cyprus Chypre Zypern
-LV Latvija Latvia Lettonie Lettland
-LT Lietuva Lithuania Lituanie Litauen
-LU Luxembourg Luxembourg Luxembourg Luxemburg
-HU Magyarország Hungary Hongrie Ungarn
-MT Malta Malta Malte Malta
-NL Nederland Netherlands Pays-Bas Niederlande
-AT Österreich Austria Autriche Österreich
-PL Polska Poland Pologne Polen
-PT Portugal Portugal Portugal Portugal
-RO România Romania Roumanie Rumänien
-SI Slovenija Slovenia Slovénie Slowenien
-SK Slovensko Slovakia Slovaquie Slowakei
-FI Suomi/Finland Finland Finlande Finnland
-SE Sverige Sweden Suède Schweden
-UK United Kingdom United Kingdom Royaume-Uni Vereinigtes Königreich
+Code ThreeCode Country English French German
+BE BEL Belgique/België Belgium Belgique Belgien
+BG BGR Bulgarija Bulgaria Bulgarie Bulgarien
+CZ CZE Česká republika Czech Republic République tchèque Tschechische Republik
+DK DNK Danmark Denmark Danemark Dänemark
+DE DEU Deutschland Germany Allemagne Deutschland
+EE EST Eesti Estonia Estonie Estland
+IE IRL Éire/Ireland Ireland Irlande Irland
+EL GRC Elláda Greece Grèce Griechenland
+ES ESP España Spain Espagne Spanien
+FR FRA France France France Frankreich
+HR HRV Hrvatska Croatia Croatie Kroatien
+IT ITA Italia Italy Italie Italien
+CY CYP Kýpros Cyprus Chypre Zypern
+LV LVA Latvija Latvia Lettonie Lettland
+LT LTU Lietuva Lithuania Lituanie Litauen
+LU LUX Luxembourg Luxembourg Luxembourg Luxemburg
+HU HUN Magyarország Hungary Hongrie Ungarn
+MT MLT Malta Malta Malte Malta
+NL NLD Nederland Netherlands Pays-Bas Niederlande
+AT AUT Österreich Austria Autriche Österreich
+PL POL Polska Poland Pologne Polen
+PT PRT Portugal Portugal Portugal Portugal
+RO ROU România Romania Roumanie Rumänien
+SI SVN Slovenija Slovenia Slovénie Slowenien
+SK SVK Slovensko Slovakia Slovaquie Slowakei
+FI FIN Suomi/Finland Finland Finlande Finnland
+SE SWE Sverige Sweden Suède Schweden
+UK GBR United Kingdom United Kingdom Royaume-Uni Vereinigtes Königreich

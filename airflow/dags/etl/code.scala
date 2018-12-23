@@ -32,7 +32,7 @@ var countries = spark.read.format("csv").
                         option("header", "true").
                         option("delimiter", " ").
                         load("/data/countries.csv").
-                        select($"Code".as("country_code"),$"English".as("country_name"))
+                        select($"Code".as("country_code"),$"English".as("country_name"),$"ThreeCode".as("country_map_code"))
 
 var city_dimension = countries.join(cities).
                                   where($"country_code" === substring($"city_code",0,2)).
