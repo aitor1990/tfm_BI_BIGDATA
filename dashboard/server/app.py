@@ -11,10 +11,10 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 cache = Cache()
 cache.init_app(app.server, config={'CACHE_TYPE': 'simple'})
-result = getFactByCountryName('beds',countryName = '',aggOperation='avg')
-
 years = getDimensionValuesList('year','tourism_facts')
-print(years)
+result = getFactByCountryName('beds',years[0],years[(len(years)-1)],countryName = '',aggOperation='avg')
+
+
 app.layout = html.Div(children=[
     html.H1(children='European cities dashboard'),
     html.Div(children='Variables'),
@@ -65,19 +65,19 @@ app.layout = html.Div(children=[
     dash.dependencies.Input('fact_selector', 'value'),
     dash.dependencies.Input('year_slider', 'value')])
 def update_figure(country,fact,year):
-    print(year)
-    result = getFactByCountryName(fact,country)
+    result = getFactByCountryName(fact,years[year[0]],years[year[1]],country)
     return bar_chart(result['dimension'],result['fact'],result['dimension'])
 
 @app.callback(
     dash.dependencies.Output('map', 'figure'),
     [dash.dependencies.Input('country_selector', 'value'),
-    dash.dependencies.Input('fact_selector', 'value')])
-def update_figure(country,fact):
+    dash.dependencies.Input('fact_selector', 'value'),
+    dash.dependencies.Input('year_slider', 'value')])
+def update_figure(country,fact,year):
     if not country or country == 'all' :
-        result = getFactByCountryName(fact,country)
+        result = getFactByCountryName(fact,years[year[0]],years[year[1]],country)
     else:
-        result = getAggFactByCountry(fact,country)
+        result = getAggFactByCountry(fact,years[year[0]],years[year[1]],country)
 
     return europe_map(result['dimension_aux'],result['fact'])
 
