@@ -1,3 +1,13 @@
+
+def bar_chart(dimension,fact,country):
+    return {
+        'data': [
+                {'x': dimension, 'y': fact, 'type': 'bar', 'name': 'Cities'},
+        ],
+        'layout': {'title': country }
+    }
+
+
 def europe_map(countries,values):
     scl = [[0.0, 'rgb(242,240,247)'],[0.2, 'rgb(218,218,235)'],[0.4, 'rgb(188,189,220)'],\
                 [0.6, 'rgb(158,154,200)'],[0.8, 'rgb(117,107,177)'],[1.0, 'rgb(84,39,143)']]

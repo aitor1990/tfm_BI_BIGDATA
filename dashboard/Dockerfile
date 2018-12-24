@@ -6,6 +6,8 @@ RUN pip install dash-core-components==0.38.1
 RUN pip install dash-table==3.1.7  
 RUN pip install pydrill
 RUN pip install jinja2
+RUN pip install requests
+RUN pip install Flask-Caching
 
 EXPOSE 8050
 CMD ["python","/dashboard/server/app.py"]
