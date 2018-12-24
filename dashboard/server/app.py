@@ -43,7 +43,7 @@ app.layout = html.Div(children=[
     ),style={'marginBottom': 50, 'marginTop': 25,'marginLeft': 20, 'marginRight': 20}),
     dcc.Graph(
                 id="map",
-                style={"height": "90%", "width": "98%"},
+                 style={'height': 500},
                 figure = europe_map(result['dimension_aux'],result['fact'])
     ),
     dcc.Graph(
@@ -65,7 +65,7 @@ app.layout = html.Div(children=[
     dash.dependencies.Input('fact_selector', 'value'),
     dash.dependencies.Input('year_slider', 'value')])
 def update_figure(country,fact,year):
-    result = getFactByCountryName(fact,years[year[0]],years[year[1]],country)
+    result = getFactByCountryName(fact,years[year[0]],years[year[1]],country,numberRows = 10)
     return bar_chart(result['dimension'],result['fact'],result['dimension'])
 
 @app.callback(
@@ -73,7 +73,7 @@ def update_figure(country,fact,year):
     [dash.dependencies.Input('country_selector', 'value'),
     dash.dependencies.Input('fact_selector', 'value'),
     dash.dependencies.Input('year_slider', 'value')])
-def update_figure(country,fact,year):
+def update_map(country,fact,year):
     if not country or country == 'all' :
         result = getFactByCountryName(fact,years[year[0]],years[year[1]],country)
     else:

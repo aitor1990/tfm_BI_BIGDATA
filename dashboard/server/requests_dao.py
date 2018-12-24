@@ -8,6 +8,7 @@ where a.index_city = b.index_city and a.country_name = '{{ country_name }}'
 and b.`year` >= {{ min_year }} and b.`year` <= {{ max_year }}
 group by a.city_name
 order by fact desc
+limit {{ number_rows }}
 '''
 
 fact_by_countries= '''
@@ -17,6 +18,7 @@ where a.index_city = b.index_city
 and b.`year` >= {{ min_year }} and b.`year` <= {{ max_year }}
 group by a.country_name, a.country_map_code
 order by fact desc
+limit {{ number_rows }}
 '''
 
 fact_agg_by_country= '''
@@ -26,6 +28,7 @@ where a.index_city = b.index_city and a.country_name = '{{ country_name }}'
 and b.`year` >= {{ min_year }} and b.`year` <= {{ max_year }}
 group by a.country_name, a.country_map_code
 order by fact desc
+limit {{ number_rows }}
 '''
 
 dimension_values = 'select distinct `{{ dimension }}` as dimension from dfs.`/data/{{ table }}.parquet` a order by `{{ dimension }}` asc'
@@ -36,14 +39,14 @@ drill = PyDrill(host='drill', port=8047)
 if not drill.is_active():
     raise ImproperlyConfigured('Please run Drill first')
 
-def getFactByCountryName(factName,minYear,maxYear,countryName = '',aggOperation='avg'):
+def getFactByCountryName(factName,minYear,maxYear,countryName = '',aggOperation='avg',numberRows=1000 ):
     if not countryName or countryName == 'all':
-        return getFactByCountries(factName,minYear,maxYear,aggOperation)
+        return getFactByCountries(factName,minYear,maxYear,aggOperation,numberRows)
     else:
-        return getFactByCountry(factName,minYear,maxYear,countryName,aggOperation)
+        return getFactByCountry(factName,minYear,maxYear,countryName,aggOperation,numberRows,)
 
-def getFactByCountry(factName,minYear,maxYear,countryName,aggOperation='avg'):
-         query = Template(fact_by_specific_country).render(country_name = countryName,operation = aggOperation,fact = factName, min_year = minYear ,max_year = maxYear)
+def getFactByCountry(factName,minYear,maxYear,countryName,aggOperation='avg',numberRows=1000 ):
+         query = Template(fact_by_specific_country).render(country_name = countryName,operation = aggOperation,fact = factName, min_year = minYear ,max_year = maxYear,number_rows = numberRows)
          results_query = drill.query(query)
          cities_name = []
          facts = []
@@ -53,16 +56,16 @@ def getFactByCountry(factName,minYear,maxYear,countryName,aggOperation='avg'):
          return {'dimension' :  cities_name, 'fact': facts}
 
 
-def getAggFactByCountry(factName,minYear,maxYear,countryName,aggOperation='avg'):
-    query = Template(fact_agg_by_country).render(country_name = countryName,operation = aggOperation,fact = factName,min_year  = minYear ,max_year  = maxYea)
+def getAggFactByCountry(factName,minYear,maxYear,countryName,aggOperation='avg',numberRows=1000 ):
+    query = Template(fact_agg_by_country).render(country_name = countryName,operation = aggOperation,fact = factName,min_year  = minYear ,max_year  = maxYear,number_rows = numberRows)
     result_query = drill.query(query)
     for result in result_query:
          print(result)
          return {'dimension' : [result['dimension']], 'dimension_aux' : [result['country_map_code']],'fact':[result['fact']]}
     return {}
 
-def getFactByCountries(factName,minYear,maxYear,aggOperation='avg'):
-     query = Template(fact_by_countries).render(operation = aggOperation,fact = factName,min_year  = minYear ,max_year  = maxYear)
+def getFactByCountries(factName,minYear,maxYear,aggOperation='avg',numberRows=1000):
+     query = Template(fact_by_countries).render(operation = aggOperation,fact = factName,min_year  = minYear ,max_year  = maxYear,number_rows = numberRows)
      results_query = drill.query(query)
      countries_name = []
      countries = []
@@ -88,13 +91,3 @@ def getDimensionValuesList(dimension,table = 'city_dimension'):
    for result in result_query:
        response += [result['dimension']]
    return response
-
-'''
- def getCountryCode(countryName):
-    query = Template(country_code_request).render(country_name = countryName)
-    result_query =  drill.query(query)
-    if len(result_query) == 0 and 'country_map_code' in result_query[0] :
-        return result_query[0]['country_map_code']
-    else:
-        return ''
-'''
