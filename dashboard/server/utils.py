@@ -1,3 +1,4 @@
+import plotly.graph_objs as go
 
 def bar_chart(dimension,fact,country):
     return {
@@ -20,6 +21,18 @@ def europe_map(countries,values):
             autocolorscale = True,
             locations = countries,
             z = values,
+            showscale = False,
+            layout = go.Layout(
+            autosize=False,
+            width=500,
+            height=500,
+            margin=go.layout.Margin(
+                l=50,
+                r=50,
+                b=100,
+                t=100,
+                pad=4
+            )),
             marker = dict(
                 line = dict (
                     color = 'rgb(255,255,255)',

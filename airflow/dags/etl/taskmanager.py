@@ -1,5 +1,6 @@
 from airflow.sensors.http_sensor import HttpSensor
 import json
+from airflow.operators.http_operator import SimpleHttpOperator
 from customtasks import SparkLivykHook
 CONNECTION = 'spark'
 
@@ -14,7 +15,7 @@ def statment_status(response):
     return False
 '''
 '''
-def throw_task(dag,code_path,name = ''):
+def throw_task(dag,init,code_path,name = '',debug = False):
     if name:
         name = '-'+name;
     with open(code_path, 'r') as f:
@@ -59,14 +60,17 @@ def throw_task(dag,code_path,name = ''):
         dag=dag,
     )
 
+    if not debug:
+        close_task = SimpleHttpOperator(
+            method='DELETE',
+            task_id='close-task'+name,
+            http_conn_id=CONNECTION,
+            endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')}}",
+            dag=dag,
+        )
 
-    '''close_task = SimpleHttpOperator(
-        method='DELETE',
-        task_id='close-task'+name,
-        http_conn_id=CONNECTION,
-        endpoint = "{{'/sessions/'+ti.xcom_pull(task_ids='start-session"+name+"')}}",
-        dag=dag,
-    )'''
-
-    spark_session >> sensor >> code >> end_task
-    return end_task
+        init >> spark_session >> sensor >> code >> end_task >> close_task
+        return close_task
+    else:
+        init >> spark_session >> sensor >> code >> end_task
+        return end_task

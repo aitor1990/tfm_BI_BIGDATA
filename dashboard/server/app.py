@@ -8,9 +8,14 @@ from flask_caching import Cache
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 cache = Cache()
 cache.init_app(app.server, config={'CACHE_TYPE': 'simple'})
+
+
+
+
 years = getDimensionValuesList('year','tourism_facts')
 result = getFactByCountryName('beds',years[0],years[(len(years)-1)],countryName = '',aggOperation='avg')
 
@@ -30,7 +35,7 @@ app.layout = html.Div(children=[
         id='country_selector',
         options=getDimensionValues('country_name'),
         multi=False,
-        value='all',
+        value="all",
         style={'width': '40%', 'display': 'inline-block'}
     )]),
 
@@ -41,20 +46,25 @@ app.layout = html.Div(children=[
             marks={i: years[i] for i in range(0,len(years))},
             value=[0,(len(years)-1)],
     ),style={'marginBottom': 50, 'marginTop': 25,'marginLeft': 20, 'marginRight': 20}),
-    dcc.Graph(
-                id="map",
-                 style={'height': 500},
-                figure = europe_map(result['dimension_aux'],result['fact'])
-    ),
-    dcc.Graph(
-        id='example-graph',
-        figure={
-            'data': [
-                {'x': result['dimension'], 'y': result['fact'], 'type': 'bar', 'name': 'Countries'},
-            ],
-            'layout': {'title': ''}
-        }
-    )
+    html.Div([
+        dcc.Graph(
+                    id="map",
+                    style={'width': '50%', 'display': 'inline-block'},
+                    #style={'height': 500},
+                    figure = europe_map(result['dimension_aux'],result['fact'])
+        ),
+        dcc.Graph(
+            id='example-graph',
+            figure={
+                'data': [
+                    {'x': result['dimension'], 'y': result['fact'], 'type': 'bar', 'name': 'Countries'},
+                ],
+                'layout': {'title': ''}
+            },
+            style={'width': '50%', 'display': 'inline-block'}
+        )
+    ]),
+
 
 
 ])
@@ -85,4 +95,4 @@ def update_map(country,fact,year):
 
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0',debug=True)
+    app.run_server(host='0.0.0.0',debug=False)

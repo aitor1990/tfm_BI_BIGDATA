@@ -1,5 +1,20 @@
 from pydrill.client import PyDrill
 from jinja2 import Template
+from time import sleep
+
+wait_for_drill = True
+
+while wait_for_drill:
+    try:
+        drill = PyDrill(host='drill', port=8047)
+        while not drill.is_active():
+            sleep(5)
+            print("waiting for drill")
+        print("drill ready")
+        wait_for_drill = False
+    except:
+        sleep(5)
+        print("waiting for drill")
 
 fact_by_specific_country= '''
 select {{ operation }}(b.{{ fact }}) as fact ,a.city_name as dimension
@@ -35,10 +50,8 @@ dimension_values = 'select distinct `{{ dimension }}` as dimension from dfs.`/da
 
 country_code_request = 'select country_map_code from dfs.`/data/city_dimension.parquet` where country_name = {{country_name}}'
 
-drill = PyDrill(host='drill', port=8047)
-if not drill.is_active():
-    raise ImproperlyConfigured('Please run Drill first')
 
+#drill = PyDrill(host='drill', port=8047)
 def getFactByCountryName(factName,minYear,maxYear,countryName = '',aggOperation='avg',numberRows=1000 ):
     if not countryName or countryName == 'all':
         return getFactByCountries(factName,minYear,maxYear,aggOperation,numberRows)
