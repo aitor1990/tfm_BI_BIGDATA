@@ -77,17 +77,6 @@ financial  = financial.join(city_dimension.select("city_code","index_city")).
 financial = financial.join(variables.select("variable_code","index_variable")).
             where($"variable_code" === $"variable").
             drop("variable")
-/*EC1001I	Activity rate
-            EC1002I	Activity rate, male
-            EC1003I	Activity rate, female
-            EC1011I	Unemployment rate, male
-            EC1012I	Unemployment rate, female
-            EC1020I	Unemployment rate
-            EC2008I	Proportion of employment in agriculture fishery
-            EC2009I	Prop. of employment in industries (NACE Rev.1.1 C-E)
-            EC2022I	Proportion of employment in construction (NACE Rev.1.1 F)*/
-
-
 
 var activity_rate = financial.filter($"variable" === lit("EC1001I")).withColumnRenamed("variable","activity_rate")
 
