@@ -5,7 +5,7 @@ def bar_chart(dimension,fact,country):
         'data': [
                 {'x': dimension, 'y': fact, 'type': 'bar', 'name': 'Cities'},
         ],
-        'layout': {'title': country }
+        'layout': {'title': country ,'margin':{'t':30,'l':30,'r':30,'b':60,'pad':4}}
     }
 
 
@@ -14,40 +14,31 @@ def europe_map(countries,values):
                 [0.6, 'rgb(158,154,200)'],[0.8, 'rgb(117,107,177)'],[1.0, 'rgb(84,39,143)']]
 
     #MAPA EUROPA
-    data = [ dict(
-            type='choropleth',
-            #colorscale = scl,
+    data = [{
+            'type':'choropleth',
+            #colorscale : scl,
             #autocolorscale = False,
-            autocolorscale = True,
-            locations = countries,
-            z = values,
-            showscale = False,
-            layout = go.Layout(
-            autosize=False,
-            width=500,
-            height=500,
-            margin=go.layout.Margin(
-                l=50,
-                r=50,
-                b=100,
-                t=100,
-                pad=4
-            )),
-            marker = dict(
-                line = dict (
-                    color = 'rgb(255,255,255)',
-                    width = 2
-                ) ),
-            colorbar = dict(
-                title = "Variable name")
-            ) ]
+            'autocolorscale' : True,
+            'locations' : countries,
+            'z' : values,
+            'showscale' : False,
+             'marker': {
+                'line': {
+                    'color' : 'rgb(255,255,255)',
+                    'width' : 2
+                } },
+            #colorbar = dict(
+            #    title = "Variable name")
+              }]
 
-    layout = dict(
-            title = 'Europe',
-            geo = dict(
-                scope='europe',
-                showlakes = True,
-                lakecolor = 'rgb(255, 255, 255)'),
-                 )
+    layout = {
+                #title = 'Europe',
+                'geo': {
+                    'scope':'europe',
+                    'showlakes': True,
+                    'lakecolor' : 'rgb(255, 255, 255)'
+                },
+                'margin':{'t':10,'l':10,'r':10,'b':10,'pad':2}
+            }
 
-    return dict( data=data, layout=layout )
+    return {'data':data, 'layout':layout }

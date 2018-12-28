@@ -93,7 +93,7 @@ def getFactByCountries(factName,minYear,maxYear,aggOperation='avg',numberRows=10
          facts += [result['fact']]
      return {'dimension' : countries_name, 'dimension_aux':countries, 'fact':facts}
 
-def getDimensionValues(dimension,table = 'city_dimension'):
+def getDimensionValues(dimension, table = 'city_dimension'):
    query = Template(dimension_values).render(dimension = dimension,table = table)
    result_query =  drill.query(query)
    response = [{'label': 'all', 'value': ''}]
