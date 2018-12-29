@@ -1,5 +1,7 @@
 import plotly.graph_objs as go
 
+
+
 def bar_chart(dimension,fact,country):
     return {
         'data': [
@@ -8,6 +10,15 @@ def bar_chart(dimension,fact,country):
         'layout': {'title': country ,'margin':{'t':30,'l':30,'r':30,'b':60,'pad':4}}
     }
 
+def evolution_chart(values):
+    lines = []
+    for key in values:
+        lines +=[{'x':values[key]['years'], 'y': values[key]['facts'], 'type': 'scatter', 'name': key}]
+
+    return {
+        'data': lines,
+        'layout': {'margin':{'t':30,'l':30,'r':30,'b':60,'pad':4}}
+    }
 
 def europe_map(countries,values):
     scl = [[0.0, 'rgb(242,240,247)'],[0.2, 'rgb(218,218,235)'],[0.4, 'rgb(188,189,220)'],\

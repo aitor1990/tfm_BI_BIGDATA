@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 datasetSelector = dcc.RadioItems(
     id='group_facts_selector',
     options=[
-        {'label': 'Labour', 'value':'labour'},
+        {'label': 'Labour', 'value': 'labour'},
         {'label': 'Tourism', 'value': 'tourism'}
     ],
     value='tourism'
@@ -15,7 +15,7 @@ datasetSelector = dcc.RadioItems(
 factSelector = dcc.Dropdown(
     id='fact_selector',
     multi=False,
-    style={'width': '100px'}
+    style={'width': '90%'}
 )
 
 countrySelector = dcc.Dropdown(
@@ -26,7 +26,7 @@ countrySelector = dcc.Dropdown(
     style={'width': '100px'}
 )
 
-years = getDimensionValuesList('year','tourism_facts')
+years = getDimensionValuesListYear('year','tourism_facts')
 rangeYearSelector = dcc.RangeSlider(
         id='year_slider',
         min=0,
@@ -42,7 +42,12 @@ mapGraph = dcc.Graph(
 
 barGraph = dcc.Graph(
         id='bar-graph',
-        style={'width': '45%', 'display': 'inline-block', 'float': 'right','marginRight':'2.5%'}
+        style={'width': '45%', 'display': 'inline-block', 'float': 'right', 'marginRight': '2.5%'}
+)
+
+evolutionGraph = dcc.Graph(
+        id='evolution-graph',
+        style={'display': 'inline-block', 'float': 'left', 'marginRight': '2.5%', 'marginLeft': '2.5%', 'width': '95%', 'marginTop': 25}
 )
 
 tourismVariables = [{'label': 'beds', 'value': 'beds'},
