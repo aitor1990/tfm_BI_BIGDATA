@@ -21,23 +21,24 @@ while wait_for_drill:
         sleep(5)
         print("waiting for drill")
 
-
+MAXIMUN_LINES_BAR_CHART = 10
+FILTER_LINES_BAR_CHART = 3
 #drill = PyDrill(host='drill', port=8047)
-def getFactByCountryName(factName, minYear, maxYear, countryName='',cityNames = [], aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
+def getFactByCountryName(factName, minYear, maxYear, countryName='', cityNames=[], aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
     if not countryName or countryName == 'all':
         return getFactByCountries(factName, minYear, maxYear, aggOperation, numberRows, table)
     else:
-        return getFactByCountry(factName, minYear, maxYear, countryName,cityNames, aggOperation, numberRows, table)
+        return getFactByCountry(factName, minYear, maxYear, countryName, cityNames, aggOperation, numberRows, table)
 
 
-def getFactByCountry(factName, minYear, maxYear, countryName,cityNames= [], aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
+def getFactByCountry(factName, minYear, maxYear, countryName, cityNames=[], aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
          if len(cityNames) == 0:
              query = Template(fact_by_specific_country)\
                 .render(country_name=countryName, operation=aggOperation, fact=factName,
                         min_year=minYear, max_year=maxYear, number_rows=numberRows, table=table)
          else:
              query = Template(fact_by_selected_cities)\
-                .render(city_names =  parseListToSqlList(cityNames), operation=aggOperation, fact=factName,
+                .render(city_names=parseListToSqlList(cityNames), operation=aggOperation, fact=factName,
                         min_year=minYear, max_year=maxYear, number_rows=numberRows, table=table)
          results_query = drill.query(query)
          cities_name = []
@@ -73,7 +74,7 @@ def getFactByCountries(factName, minYear, maxYear, aggOperation='avg', numberRow
      return {'dimension': countries_name, 'dimension_aux': countries, 'fact': facts}
 
 
-def getFactByCountriesEvolution(factName, minYear, maxYear, countryName,cityNames = [], aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
+def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNames=[], aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
      if countryName == '':
          query = Template(fact_evolution_by_country)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
@@ -81,11 +82,11 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName,cityName
      elif len(cityNames) == 0:
          query = Template(fact_evolution_by_city)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
-                     max_year=maxYear, number_rows=numberRows, table=table,country_name = countryName)
+                     max_year=maxYear, number_rows=numberRows, table=table, country_name=countryName)
      else:
          query = Template(fact_evolution_by_selected_cities)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
-                     max_year=maxYear, number_rows=numberRows, table=table,city_names = parseListToSqlList(cityNames))
+                     max_year=maxYear, number_rows=numberRows, table=table, city_names=parseListToSqlList(cityNames))
 
      results_query = drill.query(query)
      response = {}
@@ -98,9 +99,10 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName,cityName
            response[country] = {
                'facts': [result['fact']], 'years': [result['year']]}
      #Cleaning lines with low statistic cases
-     for key in list(response.keys()):
-         if len(response[key]['years']) < (int(maxYear) - int(minYear))/3:
-             del response[key]
+     if len(cityNames) == 0 and len(response) > MAXIMUN_LINES_BAR_CHART:
+         for key in list(response.keys()):
+             if len(response[key]['years']) < (int(maxYear) - int(minYear))/FILTER_LINES_BAR_CHART:
+                 del response[key]
      return response
 
 
@@ -132,19 +134,22 @@ def getDimensionValuesListYear(dimension, table='city_dimension'):
           response += [result['dimension']]
       return response
 
+
 def getCitiesByCountry(country):
-      query = Template(cities_by_country).render(country_name= country)
+      query = Template(cities_by_country).render(country_name=country)
       result_query = drill.query(query)
       response = []
       for result in result_query:
          response += [result['city_name']]
       return response
 
+
 def getTableFromTopic(group):
     if group == 'tourism':
         return TOURISM_FACTS_TABLE
     else:
         return LABOUR_FACTS_TABLE
+
 
 def parseListToSqlList(list):
      stringList = [''' '{0}' '''.format(element) for element in list]

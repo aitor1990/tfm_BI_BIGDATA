@@ -27,7 +27,7 @@ countrySelector = dcc.Dropdown(
     value='',
     style=countrySelectorStyle
 )
-CITY_DEFAULT = [{'label':'all','values':''}]
+CITY_DEFAULT = [{'label':'all','value':''}]
 citySelector = dcc.Dropdown(
     id='city_selector',
     multi=True,

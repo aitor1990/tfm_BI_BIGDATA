@@ -6,7 +6,8 @@ var cities = spark.read.format("csv").
                         option("header", "true").
                         option("delimiter", ",").
                         load("/data/regions.csv").
-                        select($"UA_CODE_2017".as("city_code"),$"NAME".as("city_name"))
+                        select($"UA_CODE_2017".as("city_code"),$"NAME".as("city_name")).
+                        filter("city_code".charAt(6) == 'C')
 cities = cities.withColumn("index_city",monotonically_increasing_id())
 
 var countries = spark.read.format("csv").
