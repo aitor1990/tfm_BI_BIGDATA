@@ -1,13 +1,12 @@
-from airflow.sensors.http_sensor import HttpSensor
-from airflow.operators.http_operator import SimpleHttpOperator
-from airflow.operators import PythonOperator
-import json, pprint, requests, textwrap
-import logging
+import json
 from airflow.hooks.http_hook import HttpHook
-from airflow.exceptions import AirflowException
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
+'''
+ Adds http extra functionalities to connect via API REST
+ livy using an http hook as base.
+'''
 class SparkLivykHook(BaseOperator):
     template_fields = ('endpoint', 'data',)
     template_ext = ()

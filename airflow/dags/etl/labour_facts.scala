@@ -6,7 +6,7 @@ var financial = spark.read.format("csv").     // Use "csv" regardless of TSV or 
                 option("header", "true").  // Does the file have a header line?
                 option("delimiter", "\t"). // Set delimiter to tab or comma.
                 load("/data/urb_clma.tsv")
-
+//clean column names
 financial = financial.withColumn("split",split(col("indic_ur,cities\\time"), ",")).
         select(
             col("split")(0).as("variable"),col("split")(1).as("region"),
@@ -32,6 +32,7 @@ var variables = spark.read.format("csv").
                       select($"CODE".as("variable_code"),$"LABEL".as("variable_name"))
 variables = variables.withColumn("index_variable",monotonically_increasing_id())
 
+// change year from matrix to one column
 financial = financial.select("variable","region","2018").withColumn("year",lit("2018")).
     union(financial.select("variable","region","2017").withColumn("year",lit("2017"))).
     union(financial.select("variable","region","2016").withColumn("year",lit("2016"))).
@@ -78,6 +79,7 @@ financial = financial.join(variables.select("variable_code","index_variable")).
             where($"variable_code" === $"variable").
             drop("variable")
 
+// separate variables structured in one column to an specific column for each one
 var activity_rate = financial.filter($"variable" === lit("EC1001I")).withColumnRenamed("variable","activity_rate")
 
 var activity_rate_male = financial.filter($"variable" === lit("EC1002I")).
@@ -102,7 +104,7 @@ var empl_industry = financial.filter($"variable" === lit("EC2009I")).
 var empl_construction = financial.filter($"variable" === lit("EC2022I")).
                   select($"region".as("region_empl_construction"),$"year".as("year_empl_construction"),$"value".as("empl_construction"))
 
-
+//join all columns to create one fact table
 financial = activity_rate.join(activity_rate_male).
             where($"region" === $"region_activity_rate_male" && $"year" === $"year_activity_rate_male").
             drop("region_activity_rate_male","year_activity_rate_rate_male").
@@ -126,7 +128,7 @@ financial = activity_rate.join(activity_rate_male).
                   $"unem_rate",$"unem_rate_male",$"unem_rate_female",
                   $"empl_agriculture",$"empl_industry",$"empl_construction",
                   $"year")
-
+//cast variables to the needed format for the datawarehouse
 financial = financial.withColumn("index_city", financial("index_city").cast(IntegerType)).
             withColumn("index_variable", financial("index_variable").cast(IntegerType)).
             withColumn("year", financial("year").cast(IntegerType)).

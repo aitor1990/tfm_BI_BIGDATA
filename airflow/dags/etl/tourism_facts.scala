@@ -7,6 +7,7 @@ var tour = spark.read.format("csv").     // Use "csv" regardless of TSV or CSV.
                 option("delimiter", "\t"). // Set delimiter to tab or comma.
                 load("/data/urb_ctour.tsv")
 
+// clean column names
 tour = tour.withColumn("split",split(col("indic_ur,cities\\time"), ",")).
         select(
             col("split")(0).as("variable"),col("split")(1).as("region"),
@@ -32,6 +33,7 @@ var variables = spark.read.format("csv").
                       select($"CODE".as("variable_code"),$"LABEL".as("variable_name"))
 variables = variables.withColumn("index_variable",monotonically_increasing_id())
 
+// change year from matrix to one column
 tour = tour.select("variable","region","2018").withColumn("year",lit("2018")).
     union(tour.select("variable","region","2017").withColumn("year",lit("2017"))).
     union(tour.select("variable","region","2016").withColumn("year",lit("2016"))).
@@ -76,16 +78,15 @@ tour = tour.join(variables.select("variable_code","index_variable")).
             where($"variable_code" === $"variable").
             drop("variable")
 
-// asientos de cine por 1000 habitantes
+
 var cinema_seats = tour.filter($"variable" === lit("CR1003I")).withColumnRenamed("variable","cinema_seats")
-// camas por cada 1000 habitantes
+
 var beds_tour = tour.filter($"variable" === lit("CR2010I")).
                   select($"region".as("region_beds"),$"year".as("year_beds"),$"value".as("beds"))
 
-// noches por turista
 var nights_spend = tour.filter($"variable" === lit("CR2011I")).
                    select($"region".as("region_nights"),$"year".as("year_nights"),$"value".as("nights"))
-
+//join all columns to create one fact table
 tour = cinema_seats.join(beds_tour).
             where($"region" === $"region_beds" && $"year" === $"year_beds").
             drop("region_beds","year_beds").
@@ -93,6 +94,7 @@ tour = cinema_seats.join(beds_tour).
             where($"region" === $"region_nights" && $"year" === $"year_nights").
             select($"index_city",$"index_variable",$"value".as("cinema_seats"),$"beds",$"nights",$"year")
 
+//cast variables to the needed format for the datawarehouse
 tour = tour.withColumn("index_city", tour("index_city").cast(IntegerType)).
             withColumn("index_variable", tour("index_variable").cast(IntegerType)).
             withColumn("cinema_seats", tour("cinema_seats").cast(IntegerType)).
