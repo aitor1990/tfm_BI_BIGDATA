@@ -44,19 +44,24 @@ def getFactByCountry(factName, minYear, maxYear, countryName, cityNames=[], aggO
          cities_name = []
          facts = []
          for result in results_query:
-             cities_name += [result['dimension']]
-             facts += [result['fact']]
+             if 'dimension' in result and 'fact' in result:
+                 cities_name += [result['dimension']]
+                 facts += [result['fact']]
          return {'dimension':  cities_name, 'fact': facts}
 
 
 def getAggFactByCountry(factName, minYear, maxYear, countryName, aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
-    query = Template(fact_agg_by_country)\
+    queryTest = '''select a.country_name as dimension, a.country_map_code
+    from dfs.`/data/city_dimension.parquet` a
+    where  a.country_name = '{{ country_name }}' '''
+    query = Template(queryTest)\
             .render(country_name=countryName, operation=aggOperation, fact=factName,
                     min_year=minYear, max_year=maxYear, number_rows=numberRows, table=table)
     result_query = drill.query(query)
     for result in result_query:
-         return {'dimension': [result['dimension']], 'dimension_aux': [result['country_map_code']], 'fact': [result['fact']]}
-    return {}
+        if 'dimension' in result and 'country_map_code' in result:
+            return {'dimension': [result['dimension']], 'dimension_aux': [result['country_map_code']], 'fact': [40]}
+    return {'dimension': [], 'dimension_aux': [], 'fact': []}
 
 
 def getFactByCountries(factName, minYear, maxYear, aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
@@ -68,9 +73,10 @@ def getFactByCountries(factName, minYear, maxYear, aggOperation='avg', numberRow
      countries = []
      facts = []
      for result in results_query:
-         countries_name += [result['dimension']]
-         countries += [result['country_map_code']]
-         facts += [result['fact']]
+         if 'dimension' in result and 'fact' in result and 'country_map_code' in result:
+             countries_name += [result['dimension']]
+             countries += [result['country_map_code']]
+             facts += [result['fact']]
      return {'dimension': countries_name, 'dimension_aux': countries, 'fact': facts}
 
 
@@ -91,14 +97,14 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNam
      results_query = drill.query(query)
      response = {}
      for result in results_query:
-         country = result['dimension']
-         if result['dimension'] in response:
-           response[country]['facts'] += [result['fact']]
-           response[country]['years'] += [result['year']]
-         else:
-           response[country] = {
-               'facts': [result['fact']], 'years': [result['year']]}
-     #Cleaning lines with low statistic cases
+         if 'dimension' in result:
+             country = result['dimension']
+             if result['dimension'] in response:
+               response[country]['facts'] += [result['fact']]
+               response[country]['years'] += [result['year']]
+             else:
+               response[country] = {'facts': [result['fact']], 'years': [result['year']]}
+         #Cleaning lines with low statistic cases
      if len(cityNames) == 0 and len(response) > MAXIMUN_LINES_BAR_CHART:
          for key in list(response.keys()):
              if len(response[key]['years']) < (int(maxYear) - int(minYear))/FILTER_LINES_BAR_CHART:
@@ -111,8 +117,8 @@ def getDimensionValues(dimension, table='city_dimension'):
    result_query = drill.query(query)
    response = [{'label': 'all', 'value': ''}]
    for result in result_query:
-       response += [{'label': result['dimension'],
-                     'value': result['dimension']}]
+       if 'dimension' in result:
+           response += [{'label': result['dimension'],'value': result['dimension']}]
    return response
 
 
@@ -121,7 +127,8 @@ def getDimensionValuesList(dimension, table='city_dimension'):
    result_query = drill.query(query)
    response = []
    for result in result_query:
-       response += [result['dimension']]
+       if 'dimension' in result:
+           response += [result['dimension']]
    return response
 
 
@@ -131,7 +138,8 @@ def getDimensionValuesListYear(dimension, table='city_dimension'):
       result_query = drill.query(query)
       response = []
       for result in result_query:
-          response += [result['dimension']]
+          if 'dimension' in result:
+            response += [result['dimension']]
       return response
 
 
@@ -140,7 +148,8 @@ def getCitiesByCountry(country):
       result_query = drill.query(query)
       response = []
       for result in result_query:
-         response += [result['city_name']]
+         if 'city_name' in result:
+             response += [result['city_name']]
       return response
 
 
