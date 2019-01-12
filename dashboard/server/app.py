@@ -8,33 +8,36 @@ from dynamic_views import *
 from flask_caching import Cache
 from views import *
 from style import *
+from text import *
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.css.append_css({'external_url': '/reset.css'})
+app.css.append_css({'external_url': '/main.css'})
 # if you run app.py from 'root-dir-name' you don't need to specify.
 app.server.static_folder = 'static'
 
 cache = Cache()
 cache.init_app(app.server, config={'CACHE_TYPE': 'simple'})
 
-
+#html.Img(src=app.get_asset_url("ue_icon.png"), style=europeanIconStyle),
 app.layout = html.Div([
-          html.Div([html.Img(src=app.get_asset_url("ue_icon.png"), style=europeanIconStyle),
-                    html.H1(children='European cities', style=titleTextStyle)], style=titleDivStyle),
-          html.Div([
-                html.Div([
-                        html.Div([html.Strong("Topic"), datasetSelector],
-                                 style=styleMarginCommon),
-                        html.Div([html.Div([html.Strong("Variables", style=textSelectorStyle), factSelector], style=styleMasterSelector),
-                                  html.Div([html.Strong("Countries", style=textSelectorStyle), countrySelector,]),
-                                  html.Div([html.Strong("Cities", style=textSelectorStyle), citySelector])], style=styleMasterSelector),
-                                  html.Div(rangeYearSelector, style=styleYearSelector)],
-                         #html.Div([html.Strong("Year Interval",style = textSelectorStyle), rangeYearSelector], style=styleYearSelector)],
-                         style=selectorDivStyle),
-                html.Div([mapGraph, barGraph, evolutionGraph], style=graphDivStyle)], style=contentDivStyle)
-          ])
+  html.Div([
+            html.H1(children=TITLE , style=titleTextStyle)], style=titleDivStyle),
+  html.Div([
+        # selector container
+        html.Div([
+                html.Div([html.Strong(TOPIC_SELECTOR_TITLE), datasetSelector], style=styleMarginCommon),
+                html.Div([html.Div([html.Strong(VARIABLES_SELECTOR_TITLE, style=textSelectorStyle), factSelector], style=styleMasterSelector),
+                          html.Div([html.Strong(COUNTRIES_SELECTOR_TITLE, style=textSelectorStyle), countrySelector,]),
+                          html.Div([html.Strong(CITIES_SELECTOR_TITLE, style=textSelectorStyle), citySelector])], style=styleMasterSelector),
+                          html.Div(rangeYearSelector, style=styleYearSelector)],
+                 #html.Div([html.Strong("Year Interval",style = textSelectorStyle), rangeYearSelector], style=styleYearSelector)],
+                 style=selectorDivStyle),
+        # graphs containe5
+        html.Div([ html.Div(html.H6('hola',id='variable_description',style = descriptionStyle) ,style = descriptionDivStyle),
+                    mapGraph, barGraph, evolutionGraph], style=graphDivStyle)], style=contentDivStyle)
+  ], style = {'backgroundColor': '#F0F0F0'})
 
 
 @app.callback(
@@ -67,6 +70,15 @@ def update_fact_selector(group):
         return tourismVariables[0]['value']
     else:
         return labourVariables[0]['value']
+
+@app.callback(
+    dash.dependencies.Output('variable_description', 'children'),
+    [dash.dependencies.Input('group_facts_selector', 'value')])
+def update_fact_selector(group):
+    if group == 'tourism':
+        return 'ieieiiee'
+    else:
+        return 'losloslo'
 
 @app.callback(
     dash.dependencies.Output('city_selector', 'options'),
