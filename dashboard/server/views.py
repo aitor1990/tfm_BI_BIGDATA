@@ -16,7 +16,7 @@ datasetSelector = dcc.RadioItems(
 factSelector = dcc.Dropdown(
     id='fact_selector',
     multi=False,
-    style=factSelectorStyle,
+    style=selectorStyle,
     value='beds'
 )
 
@@ -25,7 +25,7 @@ countrySelector = dcc.Dropdown(
     multi=False,
     options=getDimensionValues('country_name'),
     value='',
-    style=countrySelectorStyle
+    style=selectorStyle,
 )
 CITY_DEFAULT = [{'label':'all','value':''}]
 citySelector = dcc.Dropdown(
@@ -33,7 +33,7 @@ citySelector = dcc.Dropdown(
     multi=True,
     options=CITY_DEFAULT,
     value='',
-    style=countrySelectorStyle
+    style=selectorStyle
 )
 
 years = getDimensionValuesListYear('year', 'tourism_facts')
@@ -43,7 +43,7 @@ rangeYearSelector = dcc.RangeSlider(
         max=(len(years)-1),
         marks={i: years[i] for i in range(0, len(years))},
         value=[0, (len(years)-1)],
-        vertical=True
+        vertical=True,
 )
 
 mapGraph = dcc.Graph(
