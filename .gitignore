@@ -115,8 +115,6 @@ dmypy.json
 .pyre/
 
 *.swp
-*.snappy.parquet
-*.snappy.parquet.crc
 *.h2.db
 *.lock.db
 .readme.swp
