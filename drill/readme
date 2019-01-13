@@ -1,0 +1,2 @@
+sudo docker run -it -p 8047:8047 drill
+

@@ -1,0 +1,4 @@
+sudo docker build -t livy .
+sudo docker run -p 8998:8998 livy
+
+
