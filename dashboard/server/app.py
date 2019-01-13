@@ -73,12 +73,9 @@ def update_fact_selector(group):
 
 @app.callback(
     dash.dependencies.Output('variable_description', 'children'),
-    [dash.dependencies.Input('group_facts_selector', 'value')])
-def update_fact_selector(group):
-    if group == 'tourism':
-        return 'ieieiiee'
-    else:
-        return 'losloslo'
+    [dash.dependencies.Input('fact_selector', 'value')])
+def update_fact_selector(fact):
+    return variableDescription[fact]
 
 @app.callback(
     dash.dependencies.Output('city_selector', 'options'),

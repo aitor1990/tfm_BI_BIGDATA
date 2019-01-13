@@ -69,6 +69,8 @@ financial = financial.filter(!$"value".contains(":")).
             withColumn("value",regexp_replace($"value", "\\s+", "")).
             withColumn("value",regexp_replace($"value", "\\D+", "")).
             filter(!$"variable".contains(":"))
+//create ratios
+financial = financial.withColumn("value",$"value"/10)
 
 //create index for facts table
 financial  = financial.join(city_dimension.select("city_code","index_city")).

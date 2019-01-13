@@ -65,15 +65,30 @@ tourismVariables = [{'label': 'beds', 'value': 'beds'},
                     {'label': 'cinemas seats', 'value': 'cinema_seats'},
                     {'label': 'nights spent', 'value': 'nights'}]
 
-labourVariables = [{'label': 'activity rate', 'value': 'activity_rate'},
-                   {'label': 'activiy rate female',
+labourVariables = [{'label': 'activity', 'value': 'activity_rate'},
+                   {'label': 'activity females',
                        'value': 'activity_rate_female'},
-                   {'label': 'activiy rate male', 'value': 'activity_rate_male'},
-                   {'label': 'unemployment rate ', 'value': 'unem_rate'},
-                   {'label': 'unemployment rate female',
+                   {'label': 'activity males', 'value': 'activity_rate_male'},
+                   {'label': 'unemployment', 'value': 'unem_rate'},
+                   {'label': 'unemployment females',
                        'value': 'unem_rate_female'},
-                   {'label': 'unemployment rate male', 'value': 'unem_rate_male'},
-                   {'label': 'employment rate agriculture',
+                   {'label': 'unemployment males', 'value': 'unem_rate_male'},
+                   {'label': 'employment agriculture',
                        'value': 'empl_agriculture'},
-                   {'label': 'employment rate industry', 'value': 'empl_industry'},
-                   {'label': 'employment rate construction', 'value': 'empl_construction'}]
+                   {'label': 'employment industry', 'value': 'empl_industry'},
+                   {'label': 'employment construction', 'value': 'empl_construction'}]
+
+variableDescription = {
+    'cinema_seats':'Number of cinema seats per 1000 residents',
+    'beds':'Number of available beds per 1000 residents',
+    'nights':'Total nights spent in tourist accommodation establishments per resident population',
+    'activity_rate':'Activity rate',
+    'activity_rate_female':'Activity rate in females',
+    'activity_rate_male':'Activity rate in males',
+    'unem_rate':'Unemployment rate',
+    'unem_rate_female':'Unemployment rate in females',
+    'unem_rate_male':'Unemployment rate in males',
+    'empl_agriculture':'Proportion of employment in agriculture and fishery',
+    'empl_industry':'Proportion of employment in industries',
+    'empl_construction':'Proportion of employment in construction'
+}
