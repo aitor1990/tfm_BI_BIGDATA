@@ -10,14 +10,13 @@ graphDivStyle = {'width': '82%', 'display': 'inline-block',
                  'float': 'right', 'marginTop': 10}
 
 styleMarginCommon = {'marginTop': 20, 'marginBottom': 20}
-styleMasterSelector = {'width': '100%', 'display': 'inline-block'}
-styleYearSelector = {'marginBottom': 50, 'marginTop': 25,
+styleMasterSelector = {'width': '100%', 'display': 'inline-block','marginTop': 10}
+styleYearSelector = {'marginBottom': 50, 'marginTop': 10,
                      'marginLeft': 5, 'marginRight': 5, 'height': '200px'}
-textSelectorStyle = {'marginTop': 10,
-                     'marginBottom': 10, 'font-family': 'main-font'}
+textSelectorStyle = {'font-family': 'main-font'}
 
-factSelectorStyle = {'width': '90%', 'marginTop': 10}
-countrySelectorStyle = {'width': '100px', 'marginTop': 10}
+selectorStyle = {'width': '90%', 'marginTop': 10}
+
 
 
 titleTextStyle = { 'text-align': 'center', 'vertical-align': 'middle',

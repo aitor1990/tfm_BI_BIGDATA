@@ -5,7 +5,7 @@ val spark = SparkSession.builder.config(sc.getConf).getOrCreate()
 var tour = spark.read.format("csv").     // Use "csv" regardless of TSV or CSV.
                 option("header", "true").  // Does the file have a header line?
                 option("delimiter", "\t"). // Set delimiter to tab or comma.
-                load("/data/urb_ctour.tsv")
+                load("/data/raw/urb_ctour.tsv")
 
 // clean column names
 tour = tour.withColumn("split",split(col("indic_ur,cities\\time"), ",")).
@@ -23,13 +23,13 @@ tour = tour.withColumn("split",split(col("indic_ur,cities\\time"), ",")).
             $"1991 ".as("1991"),$"1990 ".as("1990")
        )
 
-var city_dimension = spark.read.parquet("/data/city_dimension.parquet")
+var city_dimension = spark.read.parquet("/data/datawarehouse/city_dimension.parquet")
 
 
 var variables = spark.read.format("csv").
                       option("header", "true").
                       option("delimiter", ",").
-                      load("/data/urb_esms_an2.csv").
+                      load("/data/raw/urb_esms_an2.csv").
                       select($"CODE".as("variable_code"),$"LABEL".as("variable_name"))
 variables = variables.withColumn("index_variable",monotonically_increasing_id())
 
@@ -102,4 +102,4 @@ tour = tour.withColumn("index_city", tour("index_city").cast(IntegerType)).
             withColumn("nights", tour("nights").cast(IntegerType)).
             withColumn("year", tour("year").cast(IntegerType))
 
-tour.write.mode("overwrite").parquet("/data/tourism_facts.parquet")
+tour.write.mode("overwrite").parquet("/data/datawarehouse/tourism_facts.parquet")

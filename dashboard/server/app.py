@@ -28,14 +28,14 @@ app.layout = html.Div([
         # selector container
         html.Div([
                 html.Div([html.Strong(TOPIC_SELECTOR_TITLE), datasetSelector], style=styleMarginCommon),
-                html.Div([html.Div([html.Strong(VARIABLES_SELECTOR_TITLE, style=textSelectorStyle), factSelector], style=styleMasterSelector),
-                          html.Div([html.Strong(COUNTRIES_SELECTOR_TITLE, style=textSelectorStyle), countrySelector,]),
-                          html.Div([html.Strong(CITIES_SELECTOR_TITLE, style=textSelectorStyle), citySelector])], style=styleMasterSelector),
-                          html.Div(rangeYearSelector, style=styleYearSelector)],
+                html.Div([html.Strong(VARIABLES_SELECTOR_TITLE, style=textSelectorStyle), factSelector], style=styleMasterSelector),
+                html.Div([html.Strong(COUNTRIES_SELECTOR_TITLE, style=textSelectorStyle), countrySelector], style=styleMasterSelector),
+                html.Div([html.Strong(CITIES_SELECTOR_TITLE, style=textSelectorStyle), citySelector], style=styleMasterSelector),
+                html.Div([html.Strong(YEAR_SELECTOR_TITLE, style=textSelectorStyle),html.Div(rangeYearSelector,style = {'marginTop':20,'height': '200px'})], style=styleYearSelector)],
                  #html.Div([html.Strong("Year Interval",style = textSelectorStyle), rangeYearSelector], style=styleYearSelector)],
-                 style=selectorDivStyle),
+                style=selectorDivStyle),
         # graphs containe5
-        html.Div([ html.Div(html.H6('hola',id='variable_description',style = descriptionStyle) ,style = descriptionDivStyle),
+        html.Div([ html.Div(html.H6('',id='variable_description',style = descriptionStyle) ,style = descriptionDivStyle),
                     mapGraph, barGraph, evolutionGraph], style=graphDivStyle)], style=contentDivStyle)
   ], style = {'backgroundColor': '#F0F0F0'})
 

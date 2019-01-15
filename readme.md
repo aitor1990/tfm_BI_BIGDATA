@@ -94,6 +94,9 @@ If only the dashboard is neededed then run the drill and dashboard instances.
 
 The complete system can be highly hardware hungry specially when executing the ETL. It is highly recommended when using a limited hardware to execute the ETl only with airflow and spark instances running.
 
+It's important to remember in order tu run the Airflow Dag first of all the switch has to be changes from off to on.
+As no date execution has been selected a manual run is needed afterwards.
+
 ## Bugs
 
 Docker-compose nowadays hasn't a method to execute the instances in an specific order. Although a system has been implemented to make the dashboard server wait until drill is ready, there has been some cases when the server has crashed and the instance has stopped. In this case rerun the dashboard instance.
