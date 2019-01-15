@@ -5,7 +5,7 @@ val spark = SparkSession.builder.config(sc.getConf).getOrCreate()
 var financial = spark.read.format("csv").     // Use "csv" regardless of TSV or CSV.
                 option("header", "true").  // Does the file have a header line?
                 option("delimiter", "\t"). // Set delimiter to tab or comma.
-                load("/data/urb_clma.tsv")
+                load("/data/raw/urb_clma.tsv")
 //clean column names
 financial = financial.withColumn("split",split(col("indic_ur,cities\\time"), ",")).
         select(
@@ -22,13 +22,13 @@ financial = financial.withColumn("split",split(col("indic_ur,cities\\time"), ","
             $"1991 ".as("1991"),$"1990 ".as("1990")
        )
 
-var city_dimension = spark.read.parquet("/data/city_dimension.parquet")
+var city_dimension = spark.read.parquet("/data/datawarehouse/city_dimension.parquet")
 
 
 var variables = spark.read.format("csv").
                       option("header", "true").
                       option("delimiter", ",").
-                      load("/data/urb_esms_an2.csv").
+                      load("/data/raw/urb_esms_an2.csv").
                       select($"CODE".as("variable_code"),$"LABEL".as("variable_name"))
 variables = variables.withColumn("index_variable",monotonically_increasing_id())
 
@@ -144,4 +144,4 @@ financial = financial.withColumn("index_city", financial("index_city").cast(Inte
             withColumn("empl_industry", financial("empl_industry").cast(IntegerType)).
             withColumn("empl_construction", financial("empl_construction").cast(IntegerType))
 
-financial.write.mode("overwrite").parquet("/data/labour_facts.parquet")
+financial.write.mode("overwrite").parquet("/data/datawarehouse/labour_facts.parquet")

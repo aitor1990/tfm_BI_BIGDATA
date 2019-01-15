@@ -7,9 +7,9 @@ COUNTRY_DIMENSION_ETL_PATH = '/root/airflow/dags/etl/country_dimension.scala'
 TOURISM_FACT_ETL_PATH = '/root/airflow/dags/etl/tourism_facts.scala'
 LABOUR_FACT_ETL_PATH = '/root/airflow/dags/etl/labour_facts.scala'
 
-TOURISM_DATA_PATH = '/data/urb_ctour.tsv'
-LABOUR_DATA_PATH = '/data/urb_clma.tsv'
-COUNTRIES_DATA_PATH = '/data/countries.csv'
+TOURISM_DATA_PATH = '/data/raw/urb_ctour.tsv'
+LABOUR_DATA_PATH = '/data/raw/urb_clma.tsv'
+COUNTRIES_DATA_PATH = '/data/raw/countries.csv'
 
 default_args = {
     'owner': 'Aitor',
