@@ -144,4 +144,4 @@ financial = financial.withColumn("index_city", financial("index_city").cast(Inte
             withColumn("empl_industry", financial("empl_industry").cast(IntegerType)).
             withColumn("empl_construction", financial("empl_construction").cast(IntegerType))
 
-financial.write.mode("overwrite").parquet("/data/datawarehouse/labour_facts.parquet")
+financial.repartition($"year").write.mode("overwrite").parquet("/data/datawarehouse/labour_facts.parquet")

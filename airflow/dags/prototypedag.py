@@ -34,5 +34,5 @@ join = validate_task(validator_conf, dag)
 
 # etl tasks
 country_etl_task = throw_task(dag, join, COUNTRY_DIMENSION_ETL_PATH, 'country_dimension', debug=False)
-throw_task(dag, country_etl_task, TOURISM_FACT_ETL_PATH, 'tourism_facts', debug=False)
-throw_task(dag, country_etl_task, LABOUR_FACT_ETL_PATH, 'labour_facts', debug=False)
+throw_task(dag, country_etl_task, TOURISM_FACT_ETL_PATH, 'tourism_facts', debug=True)
+throw_task(dag, country_etl_task, LABOUR_FACT_ETL_PATH, 'labour_facts', debug=True)

@@ -102,4 +102,4 @@ tour = tour.withColumn("index_city", tour("index_city").cast(IntegerType)).
             withColumn("nights", tour("nights").cast(IntegerType)).
             withColumn("year", tour("year").cast(IntegerType))
 
-tour.write.mode("overwrite").parquet("/data/datawarehouse/tourism_facts.parquet")
+tour.repartition($"year").write.mode("overwrite").parquet("/data/datawarehouse/tourism_facts.parquet")
