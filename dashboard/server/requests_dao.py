@@ -51,10 +51,7 @@ def getFactByCountry(factName, minYear, maxYear, countryName, cityNames=[], aggO
 
 
 def getAggFactByCountry(factName, minYear, maxYear, countryName, aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
-    queryTest = '''select a.country_name as dimension, a.country_map_code
-    from dfs.`/data/city_dimension.parquet` a
-    where  a.country_name = '{{ country_name }}' '''
-    query = Template(queryTest)\
+    query = Template(countryList)\
             .render(country_name=countryName, operation=aggOperation, fact=factName,
                     min_year=minYear, max_year=maxYear, number_rows=numberRows, table=table)
     result_query = drill.query(query)
@@ -84,7 +81,7 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNam
      if countryName == '':
          query = Template(fact_evolution_by_country)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
-                     max_year=maxYear, number_rows=numberRows, table=table)
+                     max_year=maxYear,  table=table)
      elif len(cityNames) == 0:
          query = Template(fact_evolution_by_city)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
@@ -92,7 +89,7 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNam
      else:
          query = Template(fact_evolution_by_selected_cities)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
-                     max_year=maxYear, number_rows=numberRows, table=table, city_names=parseListToSqlList(cityNames))
+                     max_year=maxYear, table=table, city_names=parseListToSqlList(cityNames))
 
      results_query = drill.query(query)
      response = {}
@@ -104,10 +101,10 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNam
                response[country]['years'] += [result['year']]
              else:
                response[country] = {'facts': [result['fact']], 'years': [result['year']]}
-         #Cleaning lines with low statistic cases
+     #Cleaning lines with low statistic cases
      if len(cityNames) == 0 and len(response) > MAXIMUN_LINES_BAR_CHART:
          for key in list(response.keys()):
-             if len(response[key]['years']) < (int(maxYear) - int(minYear))/FILTER_LINES_BAR_CHART:
+             if len(response[key]['years']) < (int(maxYear) - int(minYear))/FILTER_LINES_BAR_CHART :
                  del response[key]
      return response
 

@@ -121,8 +121,7 @@ def update_map(country, fact, year, group):
      dash.dependencies.Input('city_selector', 'value')])
 def updateEvolutionGraph(country, fact, year, group,cities):
     table = getTableFromTopic(group)
-    result = getFactByCountriesEvolution(
-        fact, years[year[0]], years[year[1]], country, table=table,cityNames = cities)
+    result = getFactByCountriesEvolution(fact, years[year[0]], years[year[1]], country, table=table,cityNames = cities,numberRows=10)
     return evolution_chart(result)
 
 
