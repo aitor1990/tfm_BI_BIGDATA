@@ -5,12 +5,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 from plotly import graph_objs as go
 from dynamic_views import *
-from flask_caching import Cache
 from views import *
 from style import *
 from text import *
 import datetime
 import time
+from gevent.pywsgi import WSGIServer
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -18,10 +18,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.css.append_css({'external_url': '/main.css'})
 # if you run app.py from 'root-dir-name' you don't need to specify.
 app.server.static_folder = 'static'
-
-cache = Cache()
-cache.init_app(app.server, config={'CACHE_TYPE': 'simple'})
-
+server = app.server
 #html.Img(src=app.get_asset_url("ue_icon.png"), style=europeanIconStyle),
 app.layout = html.Div([
   html.Div([
@@ -134,4 +131,6 @@ def updateEvolutionGraph(country, fact, year, group,cities):
 
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0',debug=True, processes=5,threaded=False)
+    http_server = WSGIServer(('', 8050), app.server)
+    http_server.serve_forever()
+    #app.run_server(host='0.0.0.0',debug=True, processes=5,threaded=False)

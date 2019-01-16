@@ -7,7 +7,8 @@ RUN pip install dash-table==3.1.7
 RUN pip install pydrill
 RUN pip install jinja2
 RUN pip install requests
-RUN pip install Flask-Caching
+RUN pip install gevent
 
 EXPOSE 8050
+#CMD ["gunicorn","--workers=2","~/dashboard/server/app:server"]
 CMD ["python","/dashboard/server/app.py"]
