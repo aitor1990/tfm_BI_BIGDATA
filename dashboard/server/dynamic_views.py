@@ -2,6 +2,15 @@ import plotly.graph_objs as go
 
 
 def bar_chart(dimension, fact, country):
+    '''
+        Contains the bar chart view structure
+        arguments:
+            dimension -- list of keys describing each bar
+            fact -- List of numerical values that will be used as measurement in the bars
+            country -- title of de bar chart
+        return
+             Dictionary containing the view structure of the bar chart
+    '''
     return {
         'data': [
                 {'x': dimension, 'y': fact, 'type': 'bar', 'name': 'Cities'},
@@ -11,6 +20,14 @@ def bar_chart(dimension, fact, country):
 
 
 def evolution_chart(values):
+    '''
+        Contains the evolution chart view structure
+        arguments:
+            values -- contains a dictionary where each key contains the line Name
+                      and inside two list containing de X and Y to draw the line
+        return
+             Dictionary containing the view structure of the evolution chart
+    '''
     lines = []
     for key in values:
         lines += [{'x': values[key]['years'], 'y': values[key]
@@ -23,6 +40,14 @@ def evolution_chart(values):
 
 
 def europe_map(countries, values):
+    '''
+        Contains the europe map view structure
+        arguments:
+            countries - Contains each key of the country (4 characters key)
+            values - numerical value of a fact used to display the country color
+        return
+             Dictionary containing the view structure of the bar chart
+    '''
     scl = [[0.0, 'rgb(242,240,247)'], [0.2, 'rgb(218,218,235)'], [0.4, 'rgb(188,189,220)'],
            [0.6, 'rgb(158,154,200)'], [0.8, 'rgb(117,107,177)'], [1.0, 'rgb(84,39,143)']]
 

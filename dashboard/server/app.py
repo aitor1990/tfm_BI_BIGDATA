@@ -20,6 +20,8 @@ app.css.append_css({'external_url': '/main.css'})
 app.server.static_folder = 'static'
 server = app.server
 #html.Img(src=app.get_asset_url("ue_icon.png"), style=europeanIconStyle),
+
+''' =============== VIEW  ========================'''
 app.layout = html.Div([
   html.Div([
             html.H1(children=TITLE , style=titleTextStyle)], style=titleDivStyle),
@@ -38,7 +40,7 @@ app.layout = html.Div([
                     mapGraph, barGraph, evolutionGraph], style=graphDivStyle)], style=contentDivStyle)
   ], style = {'backgroundColor': '#F0F0F0'})
 
-
+''' =============== SELECTOR UPDATE ========================'''
 @app.callback(
     dash.dependencies.Output('fact_selector', 'options'),
     [dash.dependencies.Input('group_facts_selector', 'value')])
@@ -75,7 +77,7 @@ def update_city_selector(country):
          for city in cities:
              response += [{'label': city, 'value': city}]
          return response
-
+''' =============== CHARTS UPDATE ========================'''
 @app.callback(
     dash.dependencies.Output('bar-graph', 'figure'),
     [dash.dependencies.Input('country_selector', 'value'),
@@ -84,7 +86,6 @@ def update_city_selector(country):
      dash.dependencies.Input('group_facts_selector', 'value'),
      dash.dependencies.Input('city_selector', 'value')])
 def update_bar_chart(country, fact, year, group, cities):
-    print(time.time())
     table = getTableFromTopic(group)
     result = getFactByCountryName(
         fact, years[year[0]], years[year[1]], country, cityNames=cities, numberRows=10, table=table)
@@ -100,8 +101,6 @@ def update_bar_chart(country, fact, year, group, cities):
      dash.dependencies.Input('year_slider', 'value'),
      dash.dependencies.Input('group_facts_selector', 'value')])
 def update_map(country, fact, year, group):
-    print(time.time())
-
     if group == 'tourism':
         table = TOURISM_FACTS_TABLE
     else:
@@ -124,7 +123,6 @@ def update_map(country, fact, year, group):
      dash.dependencies.Input('group_facts_selector', 'value'),
      dash.dependencies.Input('city_selector', 'value')])
 def updateEvolutionGraph(country, fact, year, group,cities):
-    print(time.time())
     table = getTableFromTopic(group)
     result = getFactByCountriesEvolution(fact, years[year[0]], years[year[1]], country, table=table,cityNames = cities,numberRows=10)
     print(time.time())

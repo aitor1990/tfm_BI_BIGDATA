@@ -3,7 +3,7 @@ from requests_dao import *
 import plotly.graph_objs as go
 from style import *
 
-
+''' ============ Selector views ======================='''
 datasetSelector = dcc.RadioItems(
     id='group_facts_selector',
     options=[
@@ -46,6 +46,8 @@ rangeYearSelector = dcc.RangeSlider(
         vertical=True,
 )
 
+''' ============ Map views ======================='''
+
 mapGraph = dcc.Graph(
         id="map",
         style=mapGraphStyle
@@ -61,6 +63,8 @@ evolutionGraph = dcc.Graph(
         style=evolutionGraphStyle
 )
 
+
+''' ============ Group of dimensions used in the selectors ======================='''
 tourismVariables = [{'label': 'beds', 'value': 'beds'},
                     {'label': 'cinemas seats', 'value': 'cinema_seats'},
                     {'label': 'nights spent', 'value': 'nights'}]
