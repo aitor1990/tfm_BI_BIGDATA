@@ -5,10 +5,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 from plotly import graph_objs as go
 from dynamic_views import *
-from flask_caching import Cache
 from views import *
 from style import *
 from text import *
+import datetime
+import time
+from gevent.pywsgi import WSGIServer
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -16,10 +18,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.css.append_css({'external_url': '/main.css'})
 # if you run app.py from 'root-dir-name' you don't need to specify.
 app.server.static_folder = 'static'
-
-cache = Cache()
-cache.init_app(app.server, config={'CACHE_TYPE': 'simple'})
-
+server = app.server
 #html.Img(src=app.get_asset_url("ue_icon.png"), style=europeanIconStyle),
 app.layout = html.Div([
   html.Div([
@@ -38,20 +37,6 @@ app.layout = html.Div([
         html.Div([ html.Div(html.H6('',id='variable_description',style = descriptionStyle) ,style = descriptionDivStyle),
                     mapGraph, barGraph, evolutionGraph], style=graphDivStyle)], style=contentDivStyle)
   ], style = {'backgroundColor': '#F0F0F0'})
-
-
-@app.callback(
-    dash.dependencies.Output('bar-graph', 'figure'),
-    [dash.dependencies.Input('country_selector', 'value'),
-     dash.dependencies.Input('fact_selector', 'value'),
-     dash.dependencies.Input('year_slider', 'value'),
-     dash.dependencies.Input('group_facts_selector', 'value'),
-     dash.dependencies.Input('city_selector', 'value')])
-def update_bar_chart(country, fact, year, group, cities):
-    table = getTableFromTopic(group)
-    result = getFactByGeographicalDimension(
-        fact, years[year[0]], years[year[1]], country, cityNames=cities, numberRows=10, table=table)
-    return bar_chart(result['dimension'], result['fact'], result['dimension'])
 
 
 @app.callback(
@@ -91,6 +76,22 @@ def update_city_selector(country):
              response += [{'label': city, 'value': city}]
          return response
 
+@app.callback(
+    dash.dependencies.Output('bar-graph', 'figure'),
+    [dash.dependencies.Input('country_selector', 'value'),
+     dash.dependencies.Input('fact_selector', 'value'),
+     dash.dependencies.Input('year_slider', 'value'),
+     dash.dependencies.Input('group_facts_selector', 'value'),
+     dash.dependencies.Input('city_selector', 'value')])
+def update_bar_chart(country, fact, year, group, cities):
+    print(time.time())
+    table = getTableFromTopic(group)
+    result = getFactByCountryName(
+        fact, years[year[0]], years[year[1]], country, cityNames=cities, numberRows=10, table=table)
+    print(time.time())
+    return bar_chart(result['dimension'], result['fact'], result['dimension'])
+
+
 
 @app.callback(
     dash.dependencies.Output('map', 'figure'),
@@ -99,6 +100,8 @@ def update_city_selector(country):
      dash.dependencies.Input('year_slider', 'value'),
      dash.dependencies.Input('group_facts_selector', 'value')])
 def update_map(country, fact, year, group):
+    print(time.time())
+
     if group == 'tourism':
         table = TOURISM_FACTS_TABLE
     else:
@@ -109,7 +112,7 @@ def update_map(country, fact, year, group):
     else:
         result = getAggFactByCountry(
             fact, years[year[0]], years[year[1]], country, table=table)
-
+    print(time.time())
     return europe_map(result['dimension_aux'], result['fact'])
 
 
@@ -121,10 +124,14 @@ def update_map(country, fact, year, group):
      dash.dependencies.Input('group_facts_selector', 'value'),
      dash.dependencies.Input('city_selector', 'value')])
 def updateEvolutionGraph(country, fact, year, group,cities):
+    print(time.time())
     table = getTableFromTopic(group)
     result = getFactByCountriesEvolution(fact, years[year[0]], years[year[1]], country, table=table,cityNames = cities,numberRows=10)
-    return evolution_chart(result)
+    print(time.time())
+    return evolution_chart(result,)
 
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', debug=True)
+    http_server = WSGIServer(('', 8050), app.server)
+    http_server.serve_forever()
+    #app.run_server(host='0.0.0.0',debug=True, processes=5,threaded=False)
