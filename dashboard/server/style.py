@@ -1,4 +1,9 @@
+
+''' =========== CSS ==========='''
+
 CART_BACKGROUND = 'white'
+
+''' =========== basic structure style ==========='''
 
 titleDivStyle = {'height': '80px', 'backgroundColor': '#b3d1ff'}
 contentDivStyle = {'height': '1000px', 'backgroundColor': '#F0F0F0'}
@@ -9,6 +14,7 @@ descriptionDivStyle = {'height': '50px', 'width': '96%', 'marginLeft': '2%',
 graphDivStyle = {'width': '82%', 'display': 'inline-block',
                  'float': 'right', 'marginTop': 10}
 
+''' =========== selector style style ==========='''
 styleMarginCommon = {'marginTop': 20, 'marginBottom': 20}
 styleMasterSelector = {'width': '100%', 'display': 'inline-block','marginTop': 10}
 styleYearSelector = {'marginBottom': 50, 'marginTop': 10,
@@ -24,7 +30,10 @@ titleTextStyle = { 'text-align': 'center', 'vertical-align': 'middle',
 europeanIconStyle = {'height': '50px', 'width': '70px', 'display': 'inline-block',
                      'vertical-align': 'middle'}
 descriptionStyle = {'text-align': 'center','vertical-align': 'middle','line-height': '50px'}
-#graphs
+
+
+''' =========== graphs container style ==========='''
+
 mapGraphStyle = {
         'width': '47%', 'display': 'inline-block',
        'float': 'left', 'marginLeft': '2%'}
