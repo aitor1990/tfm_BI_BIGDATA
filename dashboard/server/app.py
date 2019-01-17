@@ -49,7 +49,7 @@ app.layout = html.Div([
      dash.dependencies.Input('city_selector', 'value')])
 def update_bar_chart(country, fact, year, group, cities):
     table = getTableFromTopic(group)
-    result = getFactByCountryName(
+    result = getFactByGeographicalDimension(
         fact, years[year[0]], years[year[1]], country, cityNames=cities, numberRows=10, table=table)
     return bar_chart(result['dimension'], result['fact'], result['dimension'])
 
@@ -77,6 +77,7 @@ def update_fact_selector(group):
 def update_fact_selector(fact):
     return variableDescription[fact]
 
+
 @app.callback(
     dash.dependencies.Output('city_selector', 'options'),
     [dash.dependencies.Input('country_selector', 'value')])
@@ -103,7 +104,7 @@ def update_map(country, fact, year, group):
     else:
         table = LABOUR_FACTS_TABLE
     if not country or country == 'all':
-        result = getFactByCountryName(
+        result = getFactByGeographicalDimension(
             fact, years[year[0]], years[year[1]], country, table=table)
     else:
         result = getAggFactByCountry(
