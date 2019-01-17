@@ -17,8 +17,8 @@ The project contains a complete suit to process , save and show Raw data generat
 
 Each software is supported by Docker https://www.docker.com/
 
-To test and show the prototype working, a complete example has beend added with an ETL, Orchestration and Dashboard example following the design guidelines included in the memory.
-Both raw and processed data has been added in the data folder. When the ETL is launched via airflow the processed data is overwritten.
+To test and show the prototype working, a complete example has been added with an Orchestred ETL , Datawarehouse and Dashboard example following the design guidelines included in the memory.
+Both raw and processed data has been added in the data folder.
 
 ## Getting Started
 
@@ -26,27 +26,26 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-
-To get the prototype running  first of all is necessary to install the last version of Docker and Docker-compose in a linux based distribution like Ubuntu or Mint.
+To get the prototype running first of all is necessary to install the last version of Docker and Docker-compose either in Linux or Windows OS
+- https://docs.docker.com/docker-for-windows/install/
 - https://docs.docker.com/install/linux/docker-ce/ubuntu/
 - https://docs.docker.com/compose/install/
-
-Event thought, nowadays the linux Docker images are suported by Windows 10, the prototype has only been tested using an Ubuntu OS. Therefore unexpected errors can ocurr.
 
 
 ### Installing
 
 Download or clone the project located in https://github.com/aitor1990/tfm_BI_BIGDATA
 
-- To clone the project via git use:  
+- To clone the project via Git use:  
 `git clone https://github.com/aitor1990/tfm_BI_BIGDATA.git`
 
-Inside the root of the project a docker-compose file contains all the instructions needed to run all the project.
+Inside the root of the project a docker-compose file contains all the instructions needed to run all docker instances
 
 - To build the project run the command  
 `docker-compose build`
 
-The installation may take a while as Docker must download all the dependencies and libraries needed to run the project. Once download the dependencies will be cached.
+The installation may take a while as Docker must download all the dependencies and libraries needed to run the project.
+Once downloaded, the dependencies will be cached in disk.
 
 ## Deployment
 
@@ -55,9 +54,8 @@ To deploy the project in a local machine via Docker run the command
 `docker-compose up`
 
 After executing the command four docker instances will be executed at the same time.
-To test the prototype a complete example has been added.
 
-Each instance can be deployed individualy.
+Also if necessary each instance can be deployed individualy.
 
 `docker-compose up airflow`  
 `docker-compose up drill`  
@@ -65,16 +63,15 @@ Each instance can be deployed individualy.
 `docker-compose up dashboard`
 
 
-
 - #### Airflow
-  An airflow server containing an ETL with a Spark and Livy example, ready to be launch. It has access, via http docker internal network, to the Apache livy server
-  The server can be accessed via HTTP port 8081  
+  An airflow server programmed with a Spark + Livy example ready to be launch. It has access, via http docker internal network, to the Apache livy server
+  The Airflow server can be accessed via HTTP port 8081  
   Example: http://localhost:8081/admin/
 
 - #### Spark
   A livy server connected to a spark installation over Hadoop
   To monitorize the livy sessions access the HTTP port 8080.  
-  Example : http://localhost:8080/
+  Example : http://localhost:8998/
 
 - #### Drill
   A Drill embedded server, used as a datawarehouse, with access to the data folder.
@@ -82,25 +79,22 @@ Each instance can be deployed individualy.
   Example : http://localhost:8047/
 
 - #### Dashboard
-  A Plotly Dash server with access to the Drill instance via http internal docker network. The dashboard contains the
+  A Plotly Dash server example with access to the Drill instance via http internal docker network.
   Example : http://localhost:8050/
 
 ## Other consideration
 
 The system is composed of two totally separated parts that can be executed and tested independently.
+  - When developing or testing the ETL only spark and airflow must be deployed.
+  - If only the dashboard is neededed then run both drill and dashboard instances.
 
-When developing or testing the ETL only spark and airflow must be deployed.
-If only the dashboard is neededed then run the drill and dashboard instances.
+The four instances running can be hardware hungry specially when executing the ETL. It is highly recommended when using a limited hardware to execute the ETL only with airflow and spark instances running.
 
-The complete system can be highly hardware hungry specially when executing the ETL. It is highly recommended when using a limited hardware to execute the ETl only with airflow and spark instances running.
+To execute the DAG remember first of all change the switch botton on the left.
+Then press the play button on the right (no date has been added for this demo)
 
-It's important to remember in order tu run the Airflow Dag first of all the switch has to be changes from off to on.
-As no date execution has been selected a manual run is needed afterwards.
+When the ETL is launched via airflow the data processed previosuly is overwritten.
 
 ## Bugs
 
 Docker-compose nowadays hasn't a method to execute the instances in an specific order. Although a system has been implemented to make the dashboard server wait until drill is ready, there has been some cases when the server has crashed and the instance has stopped. In this case rerun the dashboard instance.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
