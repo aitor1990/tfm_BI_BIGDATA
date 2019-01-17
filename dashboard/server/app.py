@@ -87,7 +87,7 @@ def update_city_selector(country):
      dash.dependencies.Input('city_selector', 'value')])
 def update_bar_chart(country, fact, year, group, cities):
     table = getTableFromTopic(group)
-    result = getFactByCountryName(
+    result = getFactByGeographicalDimension(
         fact, years[year[0]], years[year[1]], country, cityNames=cities, numberRows=10, table=table)
     print(time.time())
     return bar_chart(result['dimension'], result['fact'], result['dimension'])
@@ -132,4 +132,5 @@ def updateEvolutionGraph(country, fact, year, group,cities):
 if __name__ == '__main__':
     http_server = WSGIServer(('', 8050), app.server)
     http_server.serve_forever()
+    #use the bottom option when debbuging
     #app.run_server(host='0.0.0.0',debug=True, processes=5,threaded=False)

@@ -56,38 +56,38 @@ def getFactByGeographicalDimension(factName, minYear, maxYear, countryName='', c
 
 
 def getFactByCountry(factName, minYear, maxYear, countryName, cityNames=[], aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
-         """
-            Query the fact indicated agreggated by city inside a specific country.
-                Optionally a specific list of cities can be selected return its facts.
-            arguments:
-                factname -- Name of the fact in the datawarehouse
-                minYear -- Minimun year of data required. Older years will be discarted
-                maxYear -- Maximun year of data required. Newer years will be discarted
-                countryName -- String code of the country (see country selector) that will be used to get the values
-            Optionals:
-                cityNames -- List containing the name of different cities
-                aggOperation -- The operation that will be used in the aggregation (sum , avg ,count ...)
-                numberRows -- Maximun number of values that will be returned
-                table -- Fact table selected where the value is located
-            return
-                Dictionary with each key containing a column of the table
-         """
-         if len(cityNames) == 0:
-             query = Template(fact_by_specific_country)\
-                .render(country_name=countryName, operation=aggOperation, fact=factName,
-                        min_year=minYear, max_year=maxYear, number_rows=numberRows, table=table)
-         else:
-             query = Template(fact_by_selected_cities)\
-                .render(city_names=parseListToSqlList(cityNames), operation=aggOperation, fact=factName,
-                        min_year=minYear, max_year=maxYear, number_rows=numberRows, table=table)
-         results_query = drill.query(query)
-         cities_name = []
-         facts = []
-         for result in results_query:
-             if 'dimension' in result and 'fact' in result:
-                 cities_name += [result['dimension']]
-                 facts += [result['fact']]
-         return {'dimension':  cities_name, 'fact': facts}
+     """
+        Query the fact indicated agreggated by city inside a specific country.
+            Optionally a specific list of cities can be selected return its facts.
+        arguments:
+            factname -- Name of the fact in the datawarehouse
+            minYear -- Minimun year of data required. Older years will be discarted
+            maxYear -- Maximun year of data required. Newer years will be discarted
+            countryName -- String code of the country (see country selector) that will be used to get the values
+        Optionals:
+            cityNames -- List containing the name of different cities
+            aggOperation -- The operation that will be used in the aggregation (sum , avg ,count ...)
+            numberRows -- Maximun number of values that will be returned
+            table -- Fact table selected where the value is located
+        return
+            Dictionary with each key containing a column of the table
+     """
+     if len(cityNames) == 0:
+         query = Template(fact_by_specific_country)\
+            .render(country_name=countryName, operation=aggOperation, fact=factName,
+                    min_year=minYear, max_year=maxYear, number_rows=numberRows, table=table)
+     else:
+         query = Template(fact_by_selected_cities)\
+            .render(city_names=parseListToSqlList(cityNames), operation=aggOperation, fact=factName,
+                    min_year=minYear, max_year=maxYear, number_rows=numberRows, table=table)
+     results_query = drill.query(query)
+     cities_name = []
+     facts = []
+     for result in results_query:
+         if 'dimension' in result and 'fact' in result:
+             cities_name += [result['dimension']]
+             facts += [result['fact']]
+     return {'dimension':  cities_name, 'fact': facts}
 
 
 def getFactByCountries(factName, minYear, maxYear, aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
@@ -121,7 +121,7 @@ def getFactByCountries(factName, minYear, maxYear, aggOperation='avg', numberRow
 
 
 def getAggFactByCountry(factName, minYear, maxYear, countryName, aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
-     """
+    """
         Query the fact indicated agreggated by country name
         arguments:
             factname -- Name of the fact in the datawarehouse
@@ -147,7 +147,7 @@ def getAggFactByCountry(factName, minYear, maxYear, countryName, aggOperation='a
 
 
 def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNames=[], aggOperation='avg', numberRows=1000, table=DEFAULT_TABLE):
-     """
+    """
         Query the fact indicated agreggated either by country or city and all the year
         between minYear and maxYear
         arguments:
@@ -162,23 +162,23 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNam
             table -- Fact table selected where the value is located
         return
             Dictionary with the country or city a keyself.Each country contains the data grouped by year
-     """
-     if countryName == '':
+    """
+    if countryName == '':
          query = Template(fact_evolution_by_country)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
                      max_year=maxYear,  table=table)
-     elif len(cityNames) == 0:
+    elif len(cityNames) == 0:
          query = Template(fact_evolution_by_city)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
                      max_year=maxYear, number_rows=numberRows, table=table, country_name=countryName)
-     else:
+    else:
          query = Template(fact_evolution_by_selected_cities)\
              .render(operation=aggOperation, fact=factName, min_year=minYear,
                      max_year=maxYear, table=table, city_names=parseListToSqlList(cityNames))
 
-     results_query = drill.query(query)
-     response = {}
-     for result in results_query:
+    results_query = drill.query(query)
+    response = {}
+    for result in results_query:
          if 'dimension' in result:
              country = result['dimension']
              if result['dimension'] in response:
@@ -186,61 +186,64 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNam
                response[country]['years'] += [result['year']]
              else:
                response[country] = {'facts': [result['fact']], 'years': [result['year']]}
-     #Cleaning lines with low statistic cases
-     if len(cityNames) == 0 and len(response) > MAXIMUN_LINES_BAR_CHART:
+    #Cleaning lines with low statistic cases
+    if len(cityNames) == 0 and len(response) > MAXIMUN_LINES_BAR_CHART:
          for key in list(response.keys()):
              if len(response[key]['years']) < (int(maxYear) - int(minYear))/FILTER_LINES_BAR_CHART :
                  del response[key]
-     return response
+    return response
 
- """
-    Gets all the distinct values given the dimension name
-    arguments:
-        dimension -- name of the dimension
-    Optionals:
-        table -- Fact table selected where the value is located
-    return
-         Dictionary containing the label and value.
-         The format is prepared for the Dash selectors
- """
+
 def getDimensionValues(dimension, table='city_dimension'):
-   query = Template(dimension_values).render(dimension=dimension, table=table)
-   result_query = drill.query(query)
-   response = [{'label': 'all', 'value': ''}]
-   for result in result_query:
-       if 'dimension' in result:
-           response += [{'label': result['dimension'],'value': result['dimension']}]
-   return response
+    """
+        Gets all the distinct values given the dimension name
+        arguments:
+            dimension -- name of the dimension
+        Optionals:
+            table -- Fact table selected where the value is located
+        return
+             Dictionary containing the label and value.
+             The format is prepared for the Dash selectors
+    """
+    query = Template(dimension_values).render(dimension=dimension, table=table)
+    result_query = drill.query(query)
+    response = [{'label': 'all', 'value': ''}]
+    for result in result_query:
+        if 'dimension' in result:
+            response += [{'label': result['dimension'],'value': result['dimension']}]
+    return response
 
- """
-    Gets all the distinct values given the dimension name
-    arguments:
-        dimension -- name of the dimension
-    Optionals:
-        table -- Fact table selected where the value is located
-    return
-         List of values
- """
+
 def getDimensionValuesList(dimension, table='city_dimension'):
-   query = Template(dimension_values).render(dimension=dimension, table=table)
-   result_query = drill.query(query)
-   response = []
-   for result in result_query:
+    """
+        Gets all the distinct values given the dimension name
+        arguments:
+            dimension -- name of the dimension
+        Optionals:
+            table -- Fact table selected where the value is located
+        return
+            List of values
+    """
+    query = Template(dimension_values).render(dimension=dimension, table=table)
+    result_query = drill.query(query)
+    response = []
+    for result in result_query:
        if 'dimension' in result:
            response += [result['dimension']]
-   return response
+    return response
 
- """
-    Gets all the years that contains data of the specific dimensions
-    Tip: No every year contains statistics of each city
-    arguments:
-        dimension -- name of the dimension
-    Optionals:
-        table -- Fact table selected where the value is located
-    return
-         List of values
- """
+
 def getDimensionValuesListYear(dimension, table='city_dimension'):
+      """
+        Gets all the years that contains data of the specific dimensions
+        Tip: No every year contains statistics of each city
+        arguments:
+            dimension -- name of the dimension
+        Optionals:
+            table -- Fact table selected where the value is located
+        return
+             List of values
+      """
       query = Template(dimension_values_year).render(
           dimension=dimension, table=table)
       result_query = drill.query(query)
@@ -250,21 +253,22 @@ def getDimensionValuesListYear(dimension, table='city_dimension'):
             response += [result['dimension']]
       return response
 
-'''
-    Gets all the cities name given the country code
-    arguments:
-        country -- String code of the country (see country selector) that will be used to get the values
-    return
-         List of values
-'''
+
 def getCitiesByCountry(country):
-      query = Template(cities_by_country).render(country_name=country)
-      result_query = drill.query(query)
-      response = []
-      for result in result_query:
-         if 'city_name' in result:
+    '''
+        Gets all the cities name given the country code
+        arguments:
+            country -- String code of the country (see country selector) that will be used to get the values
+        return
+             List of values
+    '''
+    query = Template(cities_by_country).render(country_name=country)
+    result_query = drill.query(query)
+    response = []
+    for result in result_query:
+        if 'city_name' in result:
              response += [result['city_name']]
-      return response
+    return response
 
 
 def getTableFromTopic(group):
