@@ -86,10 +86,11 @@ def update_city_selector(country):
      dash.dependencies.Input('group_facts_selector', 'value'),
      dash.dependencies.Input('city_selector', 'value')])
 def update_bar_chart(country, fact, year, group, cities):
+    print("A1")
     table = getTableFromTopic(group)
     result = getFactByGeographicalDimension(
         fact, years[year[0]], years[year[1]], country, cityNames=cities, numberRows=10, table=table)
-    print(time.time())
+    print("A2")
     return bar_chart(result['dimension'], result['fact'], result['dimension'])
 
 
@@ -101,6 +102,7 @@ def update_bar_chart(country, fact, year, group, cities):
      dash.dependencies.Input('year_slider', 'value'),
      dash.dependencies.Input('group_facts_selector', 'value')])
 def update_map(country, fact, year, group):
+    print("B1")
     if group == 'tourism':
         table = TOURISM_FACTS_TABLE
     else:
@@ -111,7 +113,7 @@ def update_map(country, fact, year, group):
     else:
         result = getAggFactByCountry(
             fact, years[year[0]], years[year[1]], country, table=table)
-    print(time.time())
+    print("B2")
     return europe_map(result['dimension_aux'], result['fact'])
 
 
@@ -123,9 +125,10 @@ def update_map(country, fact, year, group):
      dash.dependencies.Input('group_facts_selector', 'value'),
      dash.dependencies.Input('city_selector', 'value')])
 def updateEvolutionGraph(country, fact, year, group,cities):
+    print("C1")
     table = getTableFromTopic(group)
     result = getFactByCountriesEvolution(fact, years[year[0]], years[year[1]], country, table=table,cityNames = cities,numberRows=10)
-    print(time.time())
+    print("C2")
     return evolution_chart(result,)
 
 

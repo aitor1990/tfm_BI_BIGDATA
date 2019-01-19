@@ -7,7 +7,11 @@ RUN pip install pydrill
 RUN pip install jinja2
 RUN pip install requests
 RUN pip install gevent
+RUN pip install gunicorn
+RUN pip install gunicorn[gevent]
+
+WORKDIR "/dashboard/server"
 
 EXPOSE 8050
-#CMD ["gunicorn","--workers=2","~/dashboard/server/app:server"]
-CMD ["python","/dashboard/server/app.py"]
+CMD ["gunicorn","--workers=2","--threads=2","-b 0.0.0.0:8050","--worker-class=gevent","app:server"]
+#CMD ["python","/dashboard/server/app.py"]

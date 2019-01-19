@@ -186,11 +186,6 @@ def getFactByCountriesEvolution(factName, minYear, maxYear, countryName, cityNam
                response[country]['years'] += [result['year']]
              else:
                response[country] = {'facts': [result['fact']], 'years': [result['year']]}
-    #Cleaning lines with low statistic cases
-    if len(cityNames) == 0 and len(response) > MAXIMUN_LINES_BAR_CHART:
-         for key in list(response.keys()):
-             if len(response[key]['years']) < (int(maxYear) - int(minYear))/FILTER_LINES_BAR_CHART :
-                 del response[key]
     return response
 
 
